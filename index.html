@@ -224,14 +224,14 @@
             <div class="starter-grams"><div class="big"><span id="rm100Grams">—</span>g</div><div class="small">estimated gold received</div></div>
           </div>
           <div class="starter-bnd">
-            Approx. <strong id="rm100Bnd">B$—</strong> based on the current MYR → BND rate.<br>
+            Approx. <strong id="rm100Bnd">B$—</strong> based on the current live BND → MYR rate.<br>
             <span id="rm100TngManual">Manual TNG top-up (2.6%): RM2.60 • Total RM102.60</span><br>
             <span id="rm100TngDirect">Direct top-up in Public Gold app (3.0%): RM3.00 • Total RM103.00</span>
           </div>
         </div>
 
         <div class="grid">
-          <div class="mini"><div class="k">MYR → BND</div><div class="v" id="fxRate">—</div></div>
+          <div class="mini"><div class="k">BND → MYR</div><div class="v" id="fxRate">—</div></div>
           <div class="mini"><div class="k">Public Gold updated</div><div class="v" id="publicGoldUpdated">—</div></div>
         </div>
 
@@ -593,6 +593,7 @@ const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gjdLzdJCW-NFbBx3tX5KDg_duA4hflX';
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let currentUser=null;
 const ADMIN_EMAIL='elleanorkhairunisa@outlook.com';
+const PRICE_ALERT_PREVIOUS_KEY='goldWithElleanorPreviousLiveGapPrice';
 
 
 function money(v,c){v=Number.isFinite(v)?v:0;return c==='BND'?`B$${v.toFixed(2)}`:`RM${v.toFixed(2)}`}
@@ -612,7 +613,7 @@ function renderPrice(data,isLive){
   el('rm100Bnd').textContent=`B$${(100*state.rate).toFixed(2)}`;
   el('rm100TngManual').textContent=`Manual TNG top-up (2.6%): RM2.60 • Total RM102.60 ≈ B$${(102.60*state.rate).toFixed(2)}`;
   el('rm100TngDirect').textContent=`Direct top-up in Public Gold app (3.0%): RM3.00 • Total RM103.00 ≈ B$${(103.00*state.rate).toFixed(2)}`;
-  el('fxRate').textContent=`RM1 = B$${state.rate.toFixed(4)}`;el('publicGoldUpdated').textContent=data.publicGoldUpdatedAt||'—';
+  el('fxRate').textContent=state.rate>0?`B$1 = RM${(1/state.rate).toFixed(3)}`:'—';el('publicGoldUpdated').textContent=data.publicGoldUpdatedAt||'—';
   el('liveStatus').innerHTML=`<span class="dot"></span> ${isLive?'LIVE FROM PUBLIC GOLD':'FALLBACK PRICE'}`;el('liveStatus').style.color=isLive?'var(--ok)':'var(--danger)';
   el('productStatus').innerHTML=`<span class="dot"></span> ${isLive?'LIVE FROM PUBLIC GOLD':'UNAVAILABLE'}`;el('productStatus').style.color=isLive?'var(--ok)':'var(--danger)';el('productUpdated').textContent=data.publicGoldUpdatedAt||'—';
   renderProducts();updateTracker();calculateZakat();calculateBudget();
@@ -623,8 +624,15 @@ async function loadPrice(){
   el('priceCard').classList.add('loading');
   try{
     const res=await fetch('/api/gold-price',{cache:'no-store'}); if(!res.ok)throw new Error(`Request failed: ${res.status}`);
-    const data=await res.json(); renderPrice(data,true);
-    el('priceNote').textContent=`Live price fetched from Public Gold. Checked ${formatTime(data.fetchedAt)} Brunei time. BND is an indicative conversion only.`;
+    const data=await res.json();
+    const fetchedPrice=Number(data.goldPriceMYR);
+    const storedPrevious=Number(localStorage.getItem(PRICE_ALERT_PREVIOUS_KEY));
+    state.previousMyr=Number.isFinite(storedPrevious)&&storedPrevious>0?storedPrevious:null;
+    renderPrice(data,true);
+    if(Number.isFinite(fetchedPrice)&&fetchedPrice>0){
+      localStorage.setItem(PRICE_ALERT_PREVIOUS_KEY,String(fetchedPrice));
+    }
+    el('priceNote').textContent=`Live price fetched from Public Gold. Checked ${formatTime(data.fetchedAt)} Brunei time. BND conversion uses the current live MYR/BND exchange rate.`;
     el('priceNote').classList.remove('error');
   }catch(err){
     console.error(err);el('priceNote').textContent='Live connection could not be reached, so the GAP card is using a fallback reference. Physical product prices are hidden until the Public Gold live feed is available.';el('priceNote').classList.add('error')
@@ -819,19 +827,44 @@ function updateAdminControls(){
 }
 
 function sharePriceToWhatsApp(){
+  const current=Math.round(state.myr);
+  const previous=Number(state.previousMyr);
+  let movementLine='';
+  let changeLine='';
+
+  if(Number.isFinite(previous)&&previous>0){
+    const prev=Math.round(previous);
+    const diff=current-prev;
+    if(diff<0){
+      movementLine=`RM${prev} → RM${current}/g`;
+      changeLine=`↓ RM${Math.abs(diff)}`;
+    }else if(diff>0){
+      movementLine=`RM${prev} → RM${current}/g`;
+      changeLine=`↑ RM${diff}`;
+    }else{
+      movementLine=`RM${current}/g`;
+      changeLine='No change';
+    }
+  }else{
+    movementLine=`RM${current}/g`;
+    changeLine='Current live price';
+  }
+
   const updated=el('publicGoldUpdated')?.textContent||'—';
+  const myrPerBnd=state.rate>0?(1/state.rate):null;
+
   const message=[
-    '📈 PUBLIC GOLD PRICE UPDATE',
+    '🚨 GOLD PRICE ALERT',
+    movementLine,
+    changeLine,
     '',
-    `GAP Price: RM${state.myr.toFixed(0)}/g`,
-    `Approx. BND: B$${state.bnd.toFixed(2)}/g`,
-    `MYR → BND: RM1 = B$${state.rate.toFixed(4)}`,
-    `Public Gold updated: ${updated}`,
+    `≈ B$${state.bnd.toFixed(2)}/g`,
+    myrPerBnd?`FX: B$1 = RM${myrPerBnd.toFixed(3)}`:'',
+    `Updated: ${updated}`,
     '',
-    'Gold with Elleanor',
-    'PG Code: PG00714936',
-    'https://goldwithelleanor.vercel.app'
-  ].join('\n');
+    'Gold with Elleanor'
+  ].filter(Boolean).join('\n');
+
   window.location.href='https://wa.me/?text='+encodeURIComponent(message);
 }
 
