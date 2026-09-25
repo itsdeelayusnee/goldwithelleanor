@@ -185,6 +185,25 @@
 
 
 
+
+    /* Beta clarity + mobile table improvements */
+    .beta-banner{margin:12px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--soft);font-size:11.5px;line-height:1.5;color:var(--muted);text-align:center}
+    .beta-banner strong{color:var(--gold-dark)}
+    .fx-transparency{margin-top:10px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;background:var(--card);font-size:10.5px;line-height:1.5;color:var(--muted)}
+    .tracker-privacy{margin:10px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft);font-size:10.5px;line-height:1.5;color:var(--muted)}
+    .tracker-privacy strong{color:var(--ink)}
+    .table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
+    .table-scroll table{min-width:680px}
+    @media(max-width:600px){
+      .card{padding-left:14px;padding-right:14px}
+      .tabs{gap:6px}
+      .tab-btn{padding:12px 8px;font-size:12px}
+      .table-scroll{margin-left:-4px;margin-right:-4px;width:calc(100% + 8px)}
+      .table-scroll table{font-size:11px;min-width:640px}
+      .table-scroll th,.table-scroll td{padding:10px 8px;white-space:nowrap}
+      .register-card,.feedback-card{padding-left:14px;padding-right:14px}
+    }
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -232,7 +251,8 @@
       <div class="pg-code-badge" style="margin-bottom:10px">Private Beta • In Development</div>
       <strong>Small steps, bigger future.</strong>
       <p>Use these tools to understand today’s Public Gold price, estimate how much gold your budget can buy, track your target and calculate an indicative Brunei gold zakat amount.</p>
-    </section>
+          <div class="beta-banner"><strong>Private Beta • Website still in development</strong><br>Some figures and features may change while testing is ongoing.</div>
+</section>
 
     <nav class="tabs" aria-label="Gold tools">
       <button class="tab-btn active" data-tab="pricePanel">Live Price</button>
@@ -274,6 +294,9 @@
 
         <div class="grid">
           <div class="mini"><div class="k">BND → MYR</div><div class="v" id="fxRate">—</div></div>
+          <div class="fx-transparency" id="fxTransparency">
+            Exchange rate is indicative and may differ from bank, remittance, TNG or payment-provider rates. A more Brunei-relevant live FX source is still being explored.
+          </div>
           <div class="mini"><div class="k">Public Gold updated</div><div class="v" id="publicGoldUpdated">—</div></div>
         </div>
 
@@ -371,6 +394,9 @@
         <h2 class="section-title">Gold Saving Tracker</h2>
         <p class="section-copy">Start with your monthly saving plan, then compare it with your current gold and target progress.</p>
         <div class="sync-badge local" id="syncBadge">📱 Saved on this device only</div>
+        <div class="tracker-privacy">
+          <strong>Privacy:</strong> Guest tracker data stays in this browser only. If you sign in, tracker data is synced to your own account. Other website users cannot see your saved gold figures.
+        </div>
 
         <div class="tracker-section-card" style="margin-top:16px">
           <h3 class="tracker-section-title">Monthly Gold Saving</h3>
@@ -691,11 +717,14 @@ async function loadPrice(){
     if(Number.isFinite(fetchedPrice)&&fetchedPrice>0){
       localStorage.setItem(PRICE_ALERT_PREVIOUS_KEY,String(fetchedPrice));
     }
-    el('priceNote').textContent=`Live price fetched from Public Gold. Checked ${formatTime(data.fetchedAt)} Brunei time. BND conversion uses the current live MYR/BND exchange rate.`;
+    el('priceNote').textContent=`Live Public Gold price loaded. Checked ${formatTime(data.fetchedAt)} Brunei time. BND conversion is indicative and uses the current exchange-rate source.`;
     el('priceNote').classList.remove('error');
   }catch(err){
     console.error(err);el('priceNote').textContent='Live connection could not be reached, so the GAP card is using a fallback reference. Physical product prices are hidden until the Public Gold live feed is available.';el('priceNote').classList.add('error')
-  }finally{el('priceCard').classList.remove('loading')}
+  
+    const ps=el('priceNote');
+    if(ps) ps.textContent='Live data is temporarily unavailable. Please try again shortly. Any fallback figure shown should be treated as indicative only.';
+}finally{el('priceCard').classList.remove('loading')}
 }
 
 function calculateBudget(){
