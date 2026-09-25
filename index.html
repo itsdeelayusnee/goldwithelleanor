@@ -124,6 +124,18 @@
     .tracker-section-title{margin:0;font-family:Georgia,serif;font-size:20px;font-weight:500}
     .tracker-section-copy{margin:5px 0 13px;color:var(--muted);font-size:11.5px;line-height:1.5}
 
+  
+    .zakat-reminder-card{margin-top:16px;border:1px solid var(--line);border-radius:18px;padding:16px;background:linear-gradient(135deg,var(--soft),var(--card))}
+    .zakat-reminder-card h3{margin:0;font-family:Georgia,serif;font-size:20px;font-weight:500}
+    .zakat-reminder-card p{margin:6px 0 0;color:var(--muted);font-size:11.5px;line-height:1.55}
+    .zakat-reminder-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
+    .zakat-reminder-status{margin-top:13px;border:1px solid var(--line);border-radius:14px;padding:13px;background:var(--card)}
+    .zakat-reminder-status strong{display:block;font-size:13px}
+    .zakat-reminder-status span{display:block;margin-top:4px;color:var(--muted);font-size:11.5px;line-height:1.5}
+    .zakat-reminder-status.due{border-color:var(--gold);background:var(--soft)}
+    .zakat-reminder-status.ok strong{color:var(--ok)}
+    @media(max-width:430px){.zakat-reminder-grid{grid-template-columns:1fr}}
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -239,7 +251,7 @@
     <section class="panel" id="productsPanel">
       <section class="card">
         <h2 class="section-title">Public Gold Physical Prices</h2>
-        <p class="section-copy">Live Public Gold physical gold prices in MYR with an estimated BND conversion. Physical product prices may exclude Gold Premium.</p>
+        <p class="section-copy">Live Public Gold physical gold prices in MYR with estimated BND equivalents for both PG Sell and PG Buy. Physical product prices may exclude Gold Premium.</p>
         <div class="status-row" style="margin-top:14px">
           <div class="live" id="productStatus"><span class="dot"></span> CHECKING</div>
           <div class="source" id="productUpdated">—</div>
@@ -256,7 +268,7 @@
         <div class="subhead">Gold Bar 24K</div>
         <div class="table-scroll">
           <table class="price-table">
-            <thead><tr><th>Weight</th><th>PG Sell</th><th>PG Buy</th><th>≈ Sell BND</th></tr></thead>
+            <thead><tr><th>Weight</th><th>PG Sell</th><th>≈ Sell BND</th><th>PG Buy</th><th>≈ Buy BND</th></tr></thead>
             <tbody id="barPriceRows"><tr><td colspan="4">Loading…</td></tr></tbody>
           </table>
         </div>
@@ -264,7 +276,7 @@
         <div class="subhead">Dinar 24K</div>
         <div class="table-scroll">
           <table class="price-table">
-            <thead><tr><th>Product</th><th>PG Sell</th><th>PG Buy</th><th>≈ Sell BND</th></tr></thead>
+            <thead><tr><th>Product</th><th>PG Sell</th><th>≈ Sell BND</th><th>PG Buy</th><th>≈ Buy BND</th></tr></thead>
             <tbody id="dinarPriceRows"><tr><td colspan="4">Loading…</td></tr></tbody>
           </table>
         </div>
@@ -367,6 +379,31 @@
               <div class="v" id="targetValueMYR">RM0.00</div>
               <div class="sub" id="targetValueBND">≈ B$0.00</div>
             </div>
+          </div>
+        </div>
+
+
+        <div class="zakat-reminder-card">
+          <h3>Zakat Reminder</h3>
+          <p>The reminder becomes relevant once your saved gold reaches the 85g nisab reference. Enter the date you first reached 85g to track one full haul year.</p>
+
+          <div class="zakat-reminder-grid">
+            <div class="field">
+              <label class="field-label" for="nisabReachedDate">Date first reached 85g</label>
+              <input id="nisabReachedDate" type="date" />
+            </div>
+            <div class="field">
+              <label class="field-label">Reminder</label>
+              <label class="check-row" style="margin-top:8px">
+                <input id="zakatReminderEnabled" type="checkbox" />
+                <span>Show zakat reminder when one year has completed.</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="zakat-reminder-status" id="zakatReminderStatus">
+            <strong>Below nisab or not configured</strong>
+            <span>Enter your current gold and the date you first reached 85g.</span>
           </div>
         </div>
 
@@ -518,8 +555,8 @@ function formatTime(s){const d=s?new Date(s):new Date();return new Intl.DateTime
 function renderProducts(){
   const small=state.products.smallBars||[], bars=state.products.goldBars||[], dinars=state.products.dinars||[];
   el('smallPriceRows').innerHTML=small.length?small.map(p=>`<tr><td>${p.label}</td><td><strong>RM${p.sell.toLocaleString()}</strong></td><td>B$${(p.sell*state.rate).toFixed(2)}</td></tr>`).join(''):'<tr><td colspan="3">Live product prices unavailable.</td></tr>';
-  el('barPriceRows').innerHTML=bars.length?bars.map(p=>`<tr><td>${p.label}</td><td><strong>RM${p.sell.toLocaleString()}</strong></td><td>${p.buy?`RM${p.buy.toLocaleString()}`:'—'}</td><td>B$${(p.sell*state.rate).toFixed(2)}</td></tr>`).join(''):'<tr><td colspan="4">Live product prices unavailable.</td></tr>';
-  el('dinarPriceRows').innerHTML=dinars.length?dinars.map(p=>`<tr><td>${p.label}</td><td><strong>RM${p.sell.toLocaleString()}</strong></td><td>${p.buy?`RM${p.buy.toLocaleString()}`:'—'}</td><td>B$${(p.sell*state.rate).toFixed(2)}</td></tr>`).join(''):'<tr><td colspan="4">Live product prices unavailable.</td></tr>';
+  el('barPriceRows').innerHTML=bars.length?bars.map(p=>`<tr><td>${p.label}</td><td><strong>RM${p.sell.toLocaleString()}</strong></td><td>B$${(p.sell*state.rate).toFixed(2)}</td><td>${p.buy?`RM${p.buy.toLocaleString()}`:'—'}</td><td>${p.buy?`B$${(p.buy*state.rate).toFixed(2)}`:'—'}</td></tr>`).join(''):'<tr><td colspan="5">Live product prices unavailable.</td></tr>';
+  el('dinarPriceRows').innerHTML=dinars.length?dinars.map(p=>`<tr><td>${p.label}</td><td><strong>RM${p.sell.toLocaleString()}</strong></td><td>B$${(p.sell*state.rate).toFixed(2)}</td><td>${p.buy?`RM${p.buy.toLocaleString()}`:'—'}</td><td>${p.buy?`B$${(p.buy*state.rate).toFixed(2)}`:'—'}</td></tr>`).join(''):'<tr><td colspan="5">Live product prices unavailable.</td></tr>';
 }
 
 function renderPrice(data,isLive){
@@ -582,6 +619,8 @@ function updateTracker(){
   el('targetValueMYR').textContent=money(targetM,'MYR');el('targetValueBND').textContent=`≈ ${money(targetB,'BND')}`;
 
   const monthlyGold = state.myr>0 ? monthly/state.myr : 0;
+  updateZakatReminder();
+
   [
     [1,'proj1y','proj1yValue'],
     [3,'proj3y','proj3yValue'],
@@ -596,35 +635,57 @@ function updateTracker(){
   });
 }
 async function saveTracker(){
-  const values={current_grams:Math.max(0,Number(el('currentGrams').value)||0),target_grams:Math.max(0,Number(el('targetGrams').value)||0),monthly_saving:Math.max(0,Number(el('monthlySaving').value)||0),updated_at:new Date().toISOString()};
+  const values={
+    current_grams:Math.max(0,Number(el('currentGrams').value)||0),
+    target_grams:Math.max(0,Number(el('targetGrams').value)||0),
+    monthly_saving:Math.max(0,Number(el('monthlySaving').value)||0),
+    nisab_reached_date:el('nisabReachedDate').value||null,
+    zakat_reminder_enabled:el('zakatReminderEnabled').checked,
+    updated_at:new Date().toISOString()
+  };
   if(currentUser){
     const {error}=await supabaseClient.from('gold_tracker').upsert({user_id:currentUser.id,...values},{onConflict:'user_id'});
     if(error){el('savedMsg').textContent='Could not sync right now. Please try again.';console.error(error);return}
     el('savedMsg').textContent='Progress synced to your account ✓';
   }else{
-    localStorage.setItem(storageKey,JSON.stringify({currentGrams:el('currentGrams').value,targetGrams:el('targetGrams').value,monthlySaving:el('monthlySaving').value}));
+    localStorage.setItem(storageKey,JSON.stringify({
+      currentGrams:el('currentGrams').value,
+      targetGrams:el('targetGrams').value,
+      monthlySaving:el('monthlySaving').value,
+      nisabReachedDate:el('nisabReachedDate').value,
+      zakatReminderEnabled:el('zakatReminderEnabled').checked
+    }));
     el('savedMsg').textContent='Progress saved on this device ✓';
   }
   setTimeout(()=>el('savedMsg').textContent='',2400);
 }
 async function loadTracker(){
   if(currentUser){
-    const {data,error}=await supabaseClient.from('gold_tracker').select('current_grams,target_grams,monthly_saving').eq('user_id',currentUser.id).maybeSingle();
+    const {data,error}=await supabaseClient.from('gold_tracker').select('current_grams,target_grams,monthly_saving,nisab_reached_date,zakat_reminder_enabled').eq('user_id',currentUser.id).maybeSingle();
     if(!error&&data){
       el('currentGrams').value=data.current_grams??'';
       el('targetGrams').value=data.target_grams??'';
       el('monthlySaving').value=data.monthly_saving??'';
+      el('nisabReachedDate').value=data.nisab_reached_date??'';
+      el('zakatReminderEnabled').checked=Boolean(data.zakat_reminder_enabled);
     }else if(error){console.error(error)}
   }else{
     try{
       const s=JSON.parse(localStorage.getItem(storageKey)||'null');
-      if(s){el('currentGrams').value=s.currentGrams||'';el('targetGrams').value=s.targetGrams||'';el('monthlySaving').value=s.monthlySaving||''}
+      if(s){
+        el('currentGrams').value=s.currentGrams||'';
+        el('targetGrams').value=s.targetGrams||'';
+        el('monthlySaving').value=s.monthlySaving||'';
+        el('nisabReachedDate').value=s.nisabReachedDate||'';
+        el('zakatReminderEnabled').checked=Boolean(s.zakatReminderEnabled);
+      }
     }catch(_){}
   }
   updateTracker();
 }
 async function resetTracker(){
-  ['currentGrams','targetGrams','monthlySaving'].forEach(i=>el(i).value='');
+  ['currentGrams','targetGrams','monthlySaving','nisabReachedDate'].forEach(i=>el(i).value='');
+  el('zakatReminderEnabled').checked=false;
   if(currentUser){
     const {error}=await supabaseClient.from('gold_tracker').delete().eq('user_id',currentUser.id);
     if(error)console.error(error);
@@ -632,6 +693,47 @@ async function resetTracker(){
     localStorage.removeItem(storageKey);
   }
   updateTracker();el('savedMsg').textContent='Tracker reset.';setTimeout(()=>el('savedMsg').textContent='',1600);
+}
+
+
+function updateZakatReminder(){
+  const grams=Math.max(0,Number(el('currentGrams').value)||0);
+  const dateValue=el('nisabReachedDate').value;
+  const enabled=el('zakatReminderEnabled').checked;
+  const box=el('zakatReminderStatus');
+  box.classList.remove('due','ok');
+
+  if(grams<85){
+    box.innerHTML=`<strong>Below the 85g nisab reference</strong><span>Current saved gold: ${grams.toFixed(4)}g. The reminder becomes relevant once your holdings reach 85g.</span>`;
+    return;
+  }
+  if(!dateValue){
+    box.innerHTML=`<strong>Nisab reached</strong><span>You currently have ${grams.toFixed(4)}g. Enter the date you first reached 85g to begin the haul countdown.</span>`;
+    box.classList.add('ok');
+    return;
+  }
+
+  const start=new Date(dateValue+'T00:00:00');
+  if(Number.isNaN(start.getTime())){
+    box.innerHTML=`<strong>Check the date</strong><span>Please enter a valid date for when you first reached 85g.</span>`;
+    return;
+  }
+  const due=new Date(start);
+  due.setFullYear(due.getFullYear()+1);
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  due.setHours(0,0,0,0);
+
+  const fmt=d=>new Intl.DateTimeFormat('en-BN',{day:'2-digit',month:'short',year:'numeric'}).format(d);
+  const days=Math.ceil((due-today)/86400000);
+
+  if(today>=due){
+    box.classList.add('due');
+    box.innerHTML=`<strong>Zakat check due</strong><span>Your saved date indicates one full year has completed since reaching 85g (${fmt(start)}). Please review your zakat obligation using the latest official Brunei guidance and the Zakat Calculator.</span>`;
+  }else{
+    box.classList.add('ok');
+    box.innerHTML=`<strong>Nisab reached ✓</strong><span>Haul start: ${fmt(start)} • Next zakat check: ${fmt(due)} • ${days} day${days===1?'':'s'} remaining${enabled?' • Reminder enabled':''}.</span>`;
+  }
 }
 
 function calculateZakat(){
@@ -689,7 +791,9 @@ async function initAuth(){
 document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');el(b.dataset.tab).classList.add('active');window.scrollTo({top:document.querySelector('.tabs').offsetTop-8,behavior:'smooth'})}));
 document.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>{el('budgetRM').value=b.dataset.amount;calculateBudget()}));
 el('budgetCalc').addEventListener('click',calculateBudget);el('budgetRM').addEventListener('input',calculateBudget);el('includeTngFee').addEventListener('change',calculateBudget);el('calculate').addEventListener('click',calculate);el('grams').addEventListener('keydown',e=>{if(e.key==='Enter')calculate()});
-['currentGrams','targetGrams','monthlySaving'].forEach(i=>el(i).addEventListener('input',updateTracker));el('saveTracker').addEventListener('click',saveTracker);el('resetTracker').addEventListener('click',resetTracker);
+['currentGrams','targetGrams','monthlySaving'].forEach(i=>el(i).addEventListener('input',updateTracker));
+el('nisabReachedDate').addEventListener('change',()=>{updateZakatReminder();});
+el('zakatReminderEnabled').addEventListener('change',()=>{updateZakatReminder();});el('saveTracker').addEventListener('click',saveTracker);el('resetTracker').addEventListener('click',resetTracker);
 el('calculateZakat').addEventListener('click',calculateZakat);el('zakatGrams').addEventListener('input',calculateZakat);el('haulComplete').addEventListener('change',calculateZakat);
 
 el('shareBtn').addEventListener('click',async()=>{try{if(navigator.share)await navigator.share({title:'Gold with Elleanor',url:location.href});else{await navigator.clipboard.writeText(location.href);el('shareBtn').textContent='Link copied ✓';setTimeout(()=>el('shareBtn').textContent='Share this page',1600)}}catch(_){}});

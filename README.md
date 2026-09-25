@@ -31,3 +31,7 @@ This build unregisters the previous service worker and clears old browser caches
 - Tracker reorganized into separate Total Gram, Target, and Annual sections while retaining the same guest/cloud saved data.
 
 - Tracker reordered: monthly saving and annual projection first, then current gold and target immediately above gold progress.
+
+- Added on-site zakat reminder using 85g nisab reference and one-year haul countdown. Run `supabase-zakat-reminder.sql` once in Supabase SQL Editor before using cloud sync for these new fields.
+
+- Physical Gold Prices now show both PG Sell and PG Buy in MYR and estimated BND.
