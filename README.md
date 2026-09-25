@@ -35,3 +35,5 @@ This build unregisters the previous service worker and clears old browser caches
 - Added on-site zakat reminder using 85g nisab reference and one-year haul countdown. Run `supabase-zakat-reminder.sql` once in Supabase SQL Editor before using cloud sync for these new fields.
 
 - Physical Gold Prices now show both PG Sell and PG Buy in MYR and estimated BND.
+
+- Zakat section now clearly attributes B$158.39/g and 85g nisab to the current KHEU / Majlis Ugama Islam Brunei reference shown on the official calculator.

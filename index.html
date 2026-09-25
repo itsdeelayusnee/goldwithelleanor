@@ -385,7 +385,7 @@
 
         <div class="zakat-reminder-card">
           <h3>Zakat Reminder</h3>
-          <p>The reminder becomes relevant once your saved gold reaches the 85g nisab reference. Enter the date you first reached 85g to track one full haul year.</p>
+          <p>The reminder becomes relevant once your saved gold reaches the KHEU nisab reference of 85g. Enter the date you first reached 85g to track one full haul year.</p>
 
           <div class="zakat-reminder-grid">
             <div class="field">
@@ -419,16 +419,16 @@
     <section class="panel" id="zakatPanel">
       <section class="card">
         <h2 class="section-title">Brunei Gold Zakat Calculator</h2>
-        <p class="section-copy">A simple indicative calculator using the Brunei zakat gold price you provided.</p>
+        <p class="section-copy">An indicative calculator using the current KHEU / Majlis Ugama Islam Brunei gold zakat reference shown on the official calculator.</p>
 
-        <div class="info-box"><strong>Reference used:</strong> Nisab 85g • Gold price B$158.39/g • Zakat rate 2.5% • Haul condition applies.</div>
+        <div class="info-box"><strong>KHEU reference:</strong> Nisab 85g • Gold price B$158.39/g • Zakat rate 2.5% • Haul condition applies.</div>
 
         <div class="field-grid" style="margin-top:16px">
           <div class="field">
             <label class="field-label" for="zakatGrams">Gold owned</label>
             <div class="input-affix"><input id="zakatGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 100" /><span class="suffix">g</span></div>
           </div>
-          <div class="field"><label class="field-label">Zakat gold price</label><input type="text" value="B$158.39/g" disabled /></div>
+          <div class="field"><label class="field-label">KHEU gold zakat reference</label><input type="text" value="B$158.39/g" disabled /></div>
         </div>
 
         <label class="check-row"><input id="haulComplete" type="checkbox" /><span>I have held the qualifying gold for one complete haul (zakat year).</span></label>
@@ -441,8 +441,8 @@
           <div class="calc-result" id="zakatStatus">Enter your gold holding to calculate.</div>
         </div>
         <button class="primary" id="calculateZakat" style="width:100%;margin-top:13px">Calculate Zakat</button>
-        <p class="note">Indicative only. Confirm the latest official zakat gold price, nisab, haul and applicable conditions with KHEU / Majlis Ugama Islam Brunei.</p>
-        <a class="official-link" href="https://www.mora.gov.bn/SitePages/ZakatEmas.aspx" target="_blank" rel="noopener noreferrer">Open official Brunei Gold Zakat page ↗</a>
+        <p class="note">Indicative only. B$158.39/g and the 85g nisab are shown as the current KHEU / Majlis Ugama Islam Brunei reference used by the official calculator. KHEU may revise the reference over time, so please confirm the latest official figure before payment.</p>
+        <a class="official-link" href="https://www.mora.gov.bn/SitePages/ZakatEmas.aspx" target="_blank" rel="noopener noreferrer">Open official KHEU Gold Zakat Calculator ↗</a>
       </section>
     </section>
 
@@ -704,7 +704,7 @@ function updateZakatReminder(){
   box.classList.remove('due','ok');
 
   if(grams<85){
-    box.innerHTML=`<strong>Below the 85g nisab reference</strong><span>Current saved gold: ${grams.toFixed(4)}g. The reminder becomes relevant once your holdings reach 85g.</span>`;
+    box.innerHTML=`<strong>Below the KHEU 85g nisab reference</strong><span>Current saved gold: ${grams.toFixed(4)}g. The reminder becomes relevant once your holdings reach 85g.</span>`;
     return;
   }
   if(!dateValue){
@@ -729,7 +729,7 @@ function updateZakatReminder(){
 
   if(today>=due){
     box.classList.add('due');
-    box.innerHTML=`<strong>Zakat check due</strong><span>Your saved date indicates one full year has completed since reaching 85g (${fmt(start)}). Please review your zakat obligation using the latest official Brunei guidance and the Zakat Calculator.</span>`;
+    box.innerHTML=`<strong>Zakat check due</strong><span>Your saved date indicates one full year has completed since reaching 85g (${fmt(start)}). Please review your zakat obligation using the latest KHEU / Majlis Ugama Islam Brunei guidance and the Zakat Calculator.</span>`;
   }else{
     box.classList.add('ok');
     box.innerHTML=`<strong>Nisab reached ✓</strong><span>Haul start: ${fmt(start)} • Next zakat check: ${fmt(due)} • ${days} day${days===1?'':'s'} remaining${enabled?' • Reminder enabled':''}.</span>`;
@@ -739,9 +739,9 @@ function updateZakatReminder(){
 function calculateZakat(){
   const grams=Math.max(0,Number(el('zakatGrams').value)||0),haul=el('haulComplete').checked,nisab=85,zakatGoldPriceBND=158.39,rate=.025;
   if(!grams){el('zakatBnd').textContent='B$0.00';el('zakatMyr').textContent='RM0.00 equivalent';el('zakatGold').textContent='0.0000g equivalent';el('zakatStatus').textContent='Enter your gold holding to calculate.';return}
-  if(grams<nisab){el('zakatBnd').textContent='B$0.00';el('zakatMyr').textContent='RM0.00 equivalent';el('zakatGold').textContent='0.0000g equivalent';el('zakatStatus').textContent=`Below the 85g nisab reference (${grams.toFixed(4)}g entered).`;return}
+  if(grams<nisab){el('zakatBnd').textContent='B$0.00';el('zakatMyr').textContent='RM0.00 equivalent';el('zakatGold').textContent='0.0000g equivalent';el('zakatStatus').textContent=`Below the KHEU 85g nisab reference (${grams.toFixed(4)}g entered).`;return}
   if(!haul){el('zakatBnd').textContent='B$0.00';el('zakatMyr').textContent='RM0.00 equivalent';el('zakatGold').textContent='0.0000g equivalent';el('zakatStatus').textContent='Nisab is reached, but haul is not marked as complete.';return}
-  const zg=grams*rate,zb=grams*zakatGoldPriceBND*rate,zm=state.rate>0?zb/state.rate:0;el('zakatBnd').textContent=`B$${zb.toFixed(2)}`;el('zakatMyr').textContent=`RM${zm.toFixed(2)} equivalent`;el('zakatGold').textContent=`${zg.toFixed(4)}g equivalent`;el('zakatStatus').textContent='Calculated at 2.5% using B$158.39/g.'
+  const zg=grams*rate,zb=grams*zakatGoldPriceBND*rate,zm=state.rate>0?zb/state.rate:0;el('zakatBnd').textContent=`B$${zb.toFixed(2)}`;el('zakatMyr').textContent=`RM${zm.toFixed(2)} equivalent`;el('zakatGold').textContent=`${zg.toFixed(4)}g equivalent`;el('zakatStatus').textContent='Calculated at 2.5% using the KHEU reference of B$158.39/g.'
 }
 
 
