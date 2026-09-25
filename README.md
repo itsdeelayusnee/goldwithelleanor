@@ -11,3 +11,5 @@ Mobile-first Public Gold companion site with:
 - share/copy link, dark mode and installable PWA support
 
 Deploy to Vercel from GitHub. Keep `api/gold-price.js` inside the `api` folder.
+
+- optional TNG top-up fee calculation at 2.6%
