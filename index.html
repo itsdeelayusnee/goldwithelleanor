@@ -4,223 +4,109 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#fbf7ef" />
-  <title>Gold with Elleanor — Live Gold Price & Tracker</title>
-  <link rel="icon" type="image/png" href="logo.png">
+  <meta name="description" content="Gold with Elleanor — live Public Gold price in MYR and BND, physical gold prices, gold saving tracker, calculator and Brunei gold zakat calculator." />
+  <title>Gold with Elleanor</title>
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
   <style>
-    :root {
-      --bg: #fbf7ef;
-      --card: #fffdf8;
-      --ink: #2f261b;
-      --muted: #786d60;
-      --gold: #b88a2d;
-      --gold-dark: #8e681d;
-      --line: #eadfca;
-      --ok: #2f7a4c;
-      --danger: #9c382e;
-      --shadow: 0 18px 60px rgba(91, 67, 27, .12);
+    :root{
+      --bg:#fbf7ef;--card:#fffdf8;--ink:#2f261b;--muted:#786d60;--gold:#b88a2d;--gold-dark:#8e681d;
+      --line:#eadfca;--ok:#2f7a4c;--danger:#9c382e;--soft:#fff7e7;--shadow:0 18px 60px rgba(91,67,27,.12)
     }
-
-    * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; }
-    body {
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top right, rgba(205, 171, 91, .18), transparent 34%),
-        var(--bg);
-      color: var(--ink);
-      padding: 26px 16px 40px;
+    [data-theme="dark"]{
+      --bg:#17130e;--card:#211b14;--ink:#f5ead7;--muted:#c0b39e;--gold:#d7aa4a;--gold-dark:#f0c464;
+      --line:#3c3023;--ok:#69c28c;--danger:#ef8f84;--soft:#2b2116;--shadow:0 18px 60px rgba(0,0,0,.28)
     }
-
-    .app { max-width: 520px; margin: 0 auto; }
-    .brand { text-align: center; margin-bottom: 18px; }
-    .brand-logo {
-      display: block;
-      width: min(170px, 48vw);
-      height: auto;
-      margin: 0 auto 8px;
-      object-fit: contain;
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%}
+    body{
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top right,rgba(205,171,91,.18),transparent 34%),var(--bg);
+      color:var(--ink);padding:20px 14px 92px
     }
-    .brand p { margin: 2px 0 0; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
-
-    .tabs {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-      background: rgba(255,253,248,.72); border: 1px solid var(--line);
-      border-radius: 17px; padding: 6px; margin-bottom: 14px;
-      position: sticky; top: 8px; z-index: 10; backdrop-filter: blur(12px);
-    }
-    .tab-btn {
-      border: 0; border-radius: 12px; min-height: 44px; padding: 10px 12px;
-      font: inherit; font-size: 13px; font-weight: 800; cursor: pointer;
-      color: var(--muted); background: transparent;
-    }
-    .tab-btn.active { color: white; background: linear-gradient(135deg, #bd9138, #8f681e); }
-
-    .panel { display: none; }
-    .panel.active { display: block; }
-
-    .card {
-      background: rgba(255, 253, 248, .93);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 22px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-    }
-
-    .status-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .live { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 800; letter-spacing: .1em; color: var(--ok); }
-    .dot { width: 8px; height: 8px; border-radius: 999px; background: currentColor; box-shadow: 0 0 0 5px rgba(47,122,76,.10); }
-    .source { font-size: 12px; color: var(--muted); }
-
-    .label { margin-top: 28px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .13em; }
-    .rm-price { margin-top: 7px; font-family: Georgia, serif; font-size: clamp(38px, 10vw, 58px); line-height: 1; color: var(--gold-dark); }
-    .rm-price small { font-family: Inter, sans-serif; font-size: 16px; color: var(--muted); }
-
-    .divider { height: 1px; background: var(--line); margin: 24px 0; }
-
-    .bnd-wrap { text-align: center; border-radius: 19px; border: 1px solid var(--line); padding: 20px 14px; background: #fffaf0; }
-    .bnd-wrap .caption { color: var(--muted); font-size: 13px; }
-    .bnd-price { margin: 6px 0 2px; font-size: clamp(32px, 8vw, 46px); font-weight: 850; letter-spacing: -.03em; }
-    .bnd-price span { color: var(--gold-dark); }
-
-    .starter {
-      margin-top: 16px;
-      border: 1px solid var(--line);
-      border-radius: 19px;
-      padding: 18px;
-      background: linear-gradient(135deg, #fffaf0, #fffdf8);
-    }
-    .starter-top { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; }
-    .starter-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .11em; }
-    .starter-rm { margin-top: 5px; font-family: Georgia, serif; font-size: 34px; color: var(--gold-dark); }
-    .starter-grams { text-align: right; }
-    .starter-grams .big { font-size: 28px; font-weight: 850; letter-spacing: -.02em; }
-    .starter-grams .small { color: var(--muted); font-size: 12px; margin-top: 2px; }
-    .starter-bnd { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
-
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
-    .mini { border: 1px solid var(--line); border-radius: 16px; padding: 14px; background: rgba(255,255,255,.45); }
-    .mini .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
-    .mini .v { margin-top: 5px; font-size: 14px; font-weight: 750; }
-
-
-    .register-card {
-      margin-top: 16px;
-      border: 1px solid var(--line);
-      border-radius: 19px;
-      padding: 18px;
-      background: rgba(255,255,255,.5);
-    }
-    .register-card h3 { margin: 0; font-family: Georgia, serif; font-size: 21px; font-weight: 500; }
-    .register-card p { margin: 7px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.55; }
-    .register-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-    .register-link.full-link { grid-column: 1 / -1; }
-    .register-link {
-      display: flex; align-items: center; justify-content: center; text-align: center;
-      min-height: 48px; border-radius: 14px; padding: 10px 12px;
-      font-size: 12.5px; font-weight: 800; text-decoration: none;
-    }
-    .register-link.primary-link { color: white; background: linear-gradient(135deg, #bd9138, #8f681e); }
-    .register-link.secondary-link { color: var(--ink); background: white; border: 1px solid var(--line); }
-    .register-link.whatsapp-link { color: white; background: #25D366; border: 1px solid #25D366; }
-    .register-note { margin-top: 10px; color: var(--muted); font-size: 11px; line-height: 1.5; }
-
-    .calculator { margin-top: 16px; }
-    label.field-label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 7px; }
-    .input-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
-    input {
-      width: 100%; border: 1px solid var(--line); border-radius: 14px; background: white;
-      font: inherit; font-size: 16px; padding: 13px 14px; color: var(--ink); outline: none;
-    }
-    input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,138,45,.12); }
-    button.primary {
-      border: 0; border-radius: 14px; padding: 0 17px; font: inherit; font-weight: 800; cursor: pointer;
-      color: white; background: linear-gradient(135deg, #bd9138, #8f681e);
-    }
-    button.secondary {
-      border: 1px solid var(--line); border-radius: 14px; min-height: 46px; padding: 0 17px;
-      font: inherit; font-weight: 800; cursor: pointer; color: var(--ink); background: white;
-    }
-    .calc-result { min-height: 21px; margin-top: 9px; font-size: 13px; color: var(--muted); }
-
-    .tracker-head h2 { margin: 0; font-family: Georgia, serif; font-size: 25px; font-weight: 500; }
-    .tracker-head p { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
-    .tracker-form { display: grid; gap: 13px; margin-top: 20px; }
-    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
-    .field { min-width: 0; }
-    .input-affix { position: relative; }
-    .input-affix .suffix {
-      position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
-      color: var(--muted); font-size: 13px; pointer-events: none;
-    }
-    .input-affix input { padding-right: 42px; }
-
-    .progress-card {
-      margin-top: 20px; border: 1px solid var(--line); border-radius: 19px; padding: 18px;
-      background: linear-gradient(135deg, #fffaf0, #fffdf8);
-    }
-    .progress-top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-    .progress-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
-    .progress-percent { font-size: 24px; font-weight: 850; color: var(--gold-dark); }
-    .bar { height: 12px; border-radius: 999px; background: #eee3cf; overflow: hidden; margin-top: 13px; }
-    .bar-fill { height: 100%; width: 0%; border-radius: inherit; background: linear-gradient(90deg, #cda84d, #8f681e); transition: width .35s ease; }
-    .progress-copy { margin-top: 10px; color: var(--muted); font-size: 12px; }
-
-    .tracker-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-top: 13px; }
-    .stat { border: 1px solid var(--line); border-radius: 16px; padding: 14px; background: white; }
-    .stat .k { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
-    .stat .v { margin-top: 5px; font-size: 16px; font-weight: 800; line-height: 1.25; }
-    .stat .sub { margin-top: 3px; color: var(--muted); font-size: 11px; }
-    .wide { grid-column: 1 / -1; }
-
-    .tracker-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-    .saved-msg { text-align:center; min-height:18px; margin-top:9px; color:var(--ok); font-size:12px; }
-
-
-    .zakat-result {
-      margin-top: 18px; border: 1px solid var(--line); border-radius: 19px;
-      padding: 18px; background: linear-gradient(135deg, #fffaf0, #fffdf8);
-    }
-    .zakat-result .big { margin-top: 6px; font-size: 30px; font-weight: 850; color: var(--gold-dark); }
-    .check-row { display:flex; align-items:flex-start; gap:10px; margin-top:14px; color:var(--muted); font-size:12px; line-height:1.45; }
-    .check-row input { width:auto; margin-top:2px; }
-    .official-link { display:inline-block; margin-top:12px; color:var(--gold-dark); font-size:12px; font-weight:800; text-decoration:none; }
-
-    .note { margin: 17px 2px 0; font-size: 11.5px; line-height: 1.55; color: var(--muted); text-align: center; }
-    .error { color: var(--danger); }
-    .loading { opacity: .55; }
-    footer { text-align: center; margin-top: 18px; color: var(--muted); font-size: 11px; }
-
-    @media (max-width: 380px) {
-      .card { padding: 18px; }
-      .grid, .field-grid, .tracker-stats { grid-template-columns: 1fr; }
-      .wide { grid-column: auto; }
-      .starter-top { align-items: flex-start; }
-      .starter-grams .big { font-size: 24px; }
-    }
+    button,input{font:inherit}.app{max-width:560px;margin:0 auto}
+    .top-actions{display:flex;justify-content:flex-end;gap:8px;margin-bottom:4px}
+    .icon-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;min-height:36px;padding:0 12px;font-weight:800;font-size:12px;cursor:pointer}
+    .brand{text-align:center;margin-bottom:14px}.brand-logo{display:block;width:min(145px,42vw);height:auto;margin:0 auto 6px;object-fit:contain}
+    .brand h1{font-family:Georgia,serif;font-size:26px;font-weight:500;margin:0}.brand p{margin:5px auto 0;color:var(--muted);font-size:12px;line-height:1.5;max-width:430px}
+    .intro{background:linear-gradient(135deg,var(--soft),var(--card));border:1px solid var(--line);border-radius:20px;padding:16px 18px;margin:14px 0}
+    .intro strong{font-family:Georgia,serif;font-size:19px;font-weight:500}.intro p{margin:6px 0 0;color:var(--muted);font-size:12.5px;line-height:1.55}
+    .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:color-mix(in srgb,var(--card) 82%,transparent);border:1px solid var(--line);border-radius:17px;padding:6px;margin-bottom:14px;position:sticky;top:8px;z-index:20;backdrop-filter:blur(12px)}
+    .tab-btn{border:0;border-radius:12px;min-height:44px;padding:8px 6px;font-size:11.5px;font-weight:850;cursor:pointer;color:var(--muted);background:transparent}
+    .tab-btn.active{color:#fff;background:linear-gradient(135deg,#bd9138,#8f681e)}
+    .panel{display:none}.panel.active{display:block}
+    .card{background:color-mix(in srgb,var(--card) 95%,transparent);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+    .status-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.live{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:850;letter-spacing:.08em;color:var(--ok)}
+    .dot{width:8px;height:8px;border-radius:999px;background:currentColor;box-shadow:0 0 0 5px color-mix(in srgb,currentColor 12%,transparent)}
+    .source{font-size:11px;color:var(--muted);text-align:right}.label{margin-top:22px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.12em}
+    .rm-price{margin-top:6px;font-family:Georgia,serif;font-size:clamp(38px,10vw,56px);line-height:1;color:var(--gold-dark)}.rm-price small{font-family:Inter,sans-serif;font-size:14px;color:var(--muted)}
+    .divider{height:1px;background:var(--line);margin:20px 0}.bnd-wrap{text-align:center;border-radius:18px;border:1px solid var(--line);padding:17px 12px;background:var(--soft)}
+    .caption{color:var(--muted);font-size:12px}.bnd-price{margin:4px 0 1px;font-size:clamp(30px,8vw,43px);font-weight:850}.bnd-price span{color:var(--gold-dark)}
+    .starter{margin-top:14px;border:1px solid var(--line);border-radius:18px;padding:16px;background:linear-gradient(135deg,var(--soft),var(--card))}
+    .starter-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}.starter-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}.starter-rm{margin-top:4px;font-family:Georgia,serif;font-size:31px;color:var(--gold-dark)}
+    .starter-grams{text-align:right}.starter-grams .big{font-size:25px;font-weight:850}.starter-grams .small{color:var(--muted);font-size:11px}.starter-bnd{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);color:var(--muted);font-size:11.5px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.mini{border:1px solid var(--line);border-radius:15px;padding:12px;background:color-mix(in srgb,var(--card) 80%,transparent)}.mini .k,.stat .k{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}.mini .v{margin-top:4px;font-size:13px;font-weight:780}
+    .section-title{margin:0;font-family:Georgia,serif;font-size:24px;font-weight:500}.section-copy{margin:7px 0 0;color:var(--muted);font-size:12.5px;line-height:1.55}
+    .field-label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:7px}.input-row{display:grid;grid-template-columns:1fr auto;gap:9px}
+    input{width:100%;border:1px solid var(--line);border-radius:13px;background:var(--card);font-size:16px;padding:12px 13px;color:var(--ink);outline:none}
+    input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,138,45,.12)}button.primary,.link-primary{border:0;border-radius:13px;padding:0 15px;min-height:45px;font-weight:850;cursor:pointer;color:#fff;background:linear-gradient(135deg,#bd9138,#8f681e)}
+    button.secondary{border:1px solid var(--line);border-radius:13px;min-height:45px;padding:0 15px;font-weight:850;cursor:pointer;color:var(--ink);background:var(--card)}
+    .calc-box{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}.calc-result{min-height:20px;margin-top:8px;font-size:12.5px;color:var(--muted)}
+    .preset-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}.preset{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:11px;min-height:38px;font-weight:800;font-size:11.5px;cursor:pointer}
+    .amount-result{border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:10px;background:var(--soft)}.amount-result strong{font-size:23px;color:var(--gold-dark)}
+    .price-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}.price-table th,.price-table td{padding:10px 7px;border-bottom:1px solid var(--line);text-align:right}.price-table th:first-child,.price-table td:first-child{text-align:left}.price-table th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+    .price-table td strong{color:var(--gold-dark)}.subhead{margin:18px 0 0;font-size:14px;font-weight:850}.table-scroll{overflow-x:auto}
+    .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{min-width:0}.input-affix{position:relative}.input-affix .suffix{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:12px;pointer-events:none}.input-affix input{padding-right:42px}
+    .progress-card,.zakat-result{margin-top:18px;border:1px solid var(--line);border-radius:18px;padding:16px;background:linear-gradient(135deg,var(--soft),var(--card))}
+    .progress-top{display:flex;align-items:center;justify-content:space-between}.progress-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em}.progress-percent{font-size:23px;font-weight:850;color:var(--gold-dark)}
+    .bar{height:11px;border-radius:999px;background:color-mix(in srgb,var(--line) 70%,transparent);overflow:hidden;margin-top:11px}.bar-fill{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#cda84d,#8f681e);transition:width .35s}
+    .milestones{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.milestone{border:1px solid var(--line);border-radius:999px;padding:5px 8px;font-size:10.5px;color:var(--muted)}.milestone.reached{background:var(--soft);color:var(--gold-dark);font-weight:850}
+    .progress-copy{margin-top:9px;color:var(--muted);font-size:11.5px}.tracker-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.stat{border:1px solid var(--line);border-radius:15px;padding:12px;background:var(--card)}.stat .v{margin-top:4px;font-size:15px;font-weight:850}.stat .sub{margin-top:3px;color:var(--muted);font-size:10.5px}.wide{grid-column:1/-1}
+    .tracker-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}.saved-msg{text-align:center;min-height:18px;margin-top:8px;color:var(--ok);font-size:11px}
+    .check-row{display:flex;align-items:flex-start;gap:9px;margin-top:13px;color:var(--muted);font-size:11.5px;line-height:1.45}.check-row input{width:auto;margin-top:2px}.zakat-result .big{margin-top:5px;font-size:29px;font-weight:850;color:var(--gold-dark)}
+    .info-box{border:1px solid var(--line);border-radius:15px;padding:13px;margin-top:14px;background:var(--soft);font-size:11.5px;line-height:1.55;color:var(--muted)}.info-box strong{color:var(--ink)}
+    .register-card{margin-top:16px;border:1px solid var(--line);border-radius:20px;padding:18px;background:var(--card);box-shadow:var(--shadow)}.register-card h3{margin:0;font-family:Georgia,serif;font-size:21px;font-weight:500}.register-card p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.55}
+    .register-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}.register-link{display:flex;align-items:center;justify-content:center;text-align:center;min-height:47px;border-radius:13px;padding:9px 10px;font-size:12px;font-weight:850;text-decoration:none}.primary-link{color:#fff;background:linear-gradient(135deg,#bd9138,#8f681e)}.secondary-link{color:var(--ink);background:var(--card);border:1px solid var(--line)}.whatsapp-link{color:#fff;background:#25D366}.full-link{grid-column:1/-1}
+    .share-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.share-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;min-height:42px;font-weight:800;font-size:11.5px;cursor:pointer}
+    .note{margin:14px 1px 0;font-size:11px;line-height:1.55;color:var(--muted);text-align:center}.error{color:var(--danger)}.loading{opacity:.62}.official-link{display:inline-block;margin-top:10px;color:var(--gold-dark);font-size:11.5px;font-weight:850;text-decoration:none}
+    .floating-wa{position:fixed;right:16px;bottom:18px;z-index:50;background:#25D366;color:#fff;text-decoration:none;border-radius:999px;padding:13px 16px;font-weight:900;font-size:12px;box-shadow:0 12px 34px rgba(0,0,0,.22)}
+    footer{text-align:center;margin:18px 0 0;color:var(--muted);font-size:10.5px;line-height:1.55}
+    @media(max-width:430px){body{padding:14px 10px 88px}.card{padding:17px}.tabs{gap:4px}.tab-btn{font-size:10.5px;padding:7px 3px}.field-grid,.tracker-stats,.register-actions{grid-template-columns:1fr}.full-link,.wide{grid-column:auto}.preset-row{grid-template-columns:1fr 1fr}.starter-top{align-items:flex-start}.starter-grams .big{font-size:22px}.price-table{font-size:11px}}
   </style>
 </head>
 <body>
   <main class="app">
+    <div class="top-actions">
+      <button class="icon-btn" id="installBtn" hidden>Install</button>
+      <button class="icon-btn" id="themeBtn">Dark mode</button>
+    </div>
+
     <header class="brand">
       <img class="brand-logo" src="logo.png" alt="Gold with Elleanor — Small Steps Bigger Future" />
-      <p>Live Gold Price • MYR → BND • Saving Tracker • Zakat Calculator</p>
+      <h1>Gold with Elleanor</h1>
+      <p>Learn, calculate, track and start saving gold — with Public Gold prices converted for Brunei.</p>
     </header>
 
+    <section class="intro">
+      <strong>Small steps, bigger future.</strong>
+      <p>Use these tools to understand today’s Public Gold price, estimate how much gold your budget can buy, track your target and calculate an indicative Brunei gold zakat amount.</p>
+    </section>
+
     <nav class="tabs" aria-label="Gold tools">
-      <button class="tab-btn active" data-tab="pricePanel">Live Gold Price</button>
-      <button class="tab-btn" data-tab="trackerPanel">Gold Tracker</button>
-      <button class="tab-btn" data-tab="zakatPanel">Zakat Calculator</button>
+      <button class="tab-btn active" data-tab="pricePanel">Live Price</button>
+      <button class="tab-btn" data-tab="productsPanel">Gold Prices</button>
+      <button class="tab-btn" data-tab="trackerPanel">Tracker</button>
+      <button class="tab-btn" data-tab="zakatPanel">Zakat</button>
     </nav>
 
     <section class="panel active" id="pricePanel">
       <section class="card" id="priceCard">
         <div class="status-row">
-          <div class="live" id="liveStatus"><span class="dot"></span> CHECKING LIVE PRICE</div>
-          <div class="source">Public Gold GAP 24K</div>
+          <div class="live" id="liveStatus"><span class="dot"></span> CHECKING PUBLIC GOLD</div>
+          <div class="source">GAP 24K</div>
         </div>
 
-        <div class="label">Public Gold price</div>
+        <div class="label">Public Gold GAP price</div>
         <div class="rm-price">RM<span id="myrPrice">—</span> <small>/ gram</small></div>
 
         <div class="divider"></div>
@@ -233,31 +119,35 @@
 
         <div class="starter">
           <div class="starter-top">
-            <div>
-              <div class="starter-title">Start saving with</div>
-              <div class="starter-rm">RM100</div>
-            </div>
-            <div class="starter-grams">
-              <div class="big"><span id="rm100Grams">—</span>g</div>
-              <div class="small">estimated gold received</div>
-            </div>
+            <div><div class="starter-title">Start saving with</div><div class="starter-rm">RM100</div></div>
+            <div class="starter-grams"><div class="big"><span id="rm100Grams">—</span>g</div><div class="small">estimated gold received</div></div>
           </div>
           <div class="starter-bnd">Approx. <strong id="rm100Bnd">B$—</strong> based on the current MYR → BND rate.</div>
         </div>
 
         <div class="grid">
-          <div class="mini">
-            <div class="k">MYR → BND rate</div>
-            <div class="v" id="fxRate">—</div>
-          </div>
-          <div class="mini">
-            <div class="k">Public Gold updated</div>
-            <div class="v" id="publicGoldUpdated">—</div>
-          </div>
+          <div class="mini"><div class="k">MYR → BND</div><div class="v" id="fxRate">—</div></div>
+          <div class="mini"><div class="k">Public Gold updated</div><div class="v" id="publicGoldUpdated">—</div></div>
         </div>
 
-        <div class="calculator">
-          <label class="field-label" for="grams">Calculate your gold value</label>
+        <div class="calc-box">
+          <h2 class="section-title" style="font-size:20px">How much gold can I get?</h2>
+          <p class="section-copy">Choose a quick amount or enter your own budget in MYR.</p>
+          <div class="preset-row">
+            <button class="preset" data-amount="100">RM100</button>
+            <button class="preset" data-amount="300">RM300</button>
+            <button class="preset" data-amount="500">RM500</button>
+            <button class="preset" data-amount="1000">RM1000</button>
+          </div>
+          <div class="input-row">
+            <input id="budgetRM" type="number" min="0" step="1" inputmode="decimal" placeholder="Enter amount in RM" />
+            <button class="primary" id="budgetCalc">Calculate</button>
+          </div>
+          <div class="amount-result" id="budgetResult">Enter an amount to see the estimated grams.</div>
+        </div>
+
+        <div class="calc-box">
+          <label class="field-label" for="grams">My gold value</label>
           <div class="input-row">
             <input id="grams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="Enter grams, e.g. 10" />
             <button class="primary" id="calculate">Calculate</button>
@@ -265,137 +155,110 @@
           <div class="calc-result" id="calcResult"></div>
         </div>
 
-        <div class="register-card">
-          <h3>Ready to start saving gold?</h3>
-          <p>Choose the registration that matches the saver. Registration opens on the official Public Gold form under Elleanor Khairunisa.</p>
-          <div class="register-actions">
-            <a class="register-link primary-link" href="https://pg2u.my/app/link/elleanorkhairunisa/register" target="_blank" rel="noopener noreferrer">Register — Age 18+</a>
-            <a class="register-link secondary-link" href="https://pg2u.my/app/link/elleanorkhairunisa/register18" target="_blank" rel="noopener noreferrer">Junior Account — Under 18</a>
-            <a class="register-link secondary-link full-link" href="https://pg2u.my/elleanorkhairunisa" target="_blank" rel="noopener noreferrer">Visit Elleanor's Public Gold Page</a>
-            <a class="register-link whatsapp-link full-link" href="https://wa.me/6738297497?text=Assalamualaikum%20Elleanor%2C%20I%27m%20interested%20to%20know%20more%20about%20saving%20gold%20with%20Public%20Gold." target="_blank" rel="noopener noreferrer">WhatsApp Elleanor for Guidance</a>
-          </div>
-          <div class="register-note">For a Junior Account, parent or guardian information is required during registration. Need help? WhatsApp Elleanor for guidance with registration or your first gold purchase.</div>
+        <div class="share-row">
+          <button class="share-btn" id="shareBtn">Share this page</button>
+          <button class="share-btn" id="copyBtn">Copy link</button>
         </div>
 
+        <p class="note" id="priceNote">BND is an indicative conversion only. Your bank, remittance service or payment provider may use a different exchange rate.</p>
+      </section>
+    </section>
 
-        <p class="note" id="priceNote">
-          BND is an indicative conversion only. Your bank, remittance service or payment provider may use a different exchange rate.
-        </p>
+    <section class="panel" id="productsPanel">
+      <section class="card">
+        <h2 class="section-title">Public Gold Physical Prices</h2>
+        <p class="section-copy">Live Public Gold physical gold prices in MYR with an estimated BND conversion. Physical product prices may exclude Gold Premium.</p>
+        <div class="status-row" style="margin-top:14px">
+          <div class="live" id="productStatus"><span class="dot"></span> CHECKING</div>
+          <div class="source" id="productUpdated">—</div>
+        </div>
+
+        <div class="subhead">Small Bar / Wafer 24K</div>
+        <div class="table-scroll">
+          <table class="price-table">
+            <thead><tr><th>Product</th><th>PG Sell</th><th>≈ BND</th></tr></thead>
+            <tbody id="smallPriceRows"><tr><td colspan="3">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="subhead">Gold Bar 24K</div>
+        <div class="table-scroll">
+          <table class="price-table">
+            <thead><tr><th>Weight</th><th>PG Sell</th><th>PG Buy</th><th>≈ Sell BND</th></tr></thead>
+            <tbody id="barPriceRows"><tr><td colspan="4">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="subhead">Dinar 24K</div>
+        <div class="table-scroll">
+          <table class="price-table">
+            <thead><tr><th>Product</th><th>PG Sell</th><th>PG Buy</th><th>≈ Sell BND</th></tr></thead>
+            <tbody id="dinarPriceRows"><tr><td colspan="4">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <p class="note">Prices are sourced from Public Gold Malaysia. MYR prices and product availability are controlled by Public Gold. Estimated BND values use the MYR → BND reference rate shown on this site.</p>
+        <a class="official-link" href="https://publicgold.com.my/index.php/components/com_publicgold/wb/liveprice.php" target="_blank" rel="noopener noreferrer">Open Public Gold live price page ↗</a>
       </section>
     </section>
 
     <section class="panel" id="trackerPanel">
       <section class="card">
-        <div class="tracker-head">
-          <h2>Gold Saving Tracker</h2>
-          <p>Track your current grams, set a goal and see your progress using the latest gold price shown on this page.</p>
-        </div>
+        <h2 class="section-title">Gold Saving Tracker</h2>
+        <p class="section-copy">Set your goal, see your estimated value and keep your progress saved on this device.</p>
 
-        <div class="tracker-form">
-          <div class="field-grid">
-            <div class="field">
-              <label class="field-label" for="currentGrams">Current gold</label>
-              <div class="input-affix">
-                <input id="currentGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 5.2500" />
-                <span class="suffix">g</span>
-              </div>
-            </div>
-            <div class="field">
-              <label class="field-label" for="targetGrams">Target</label>
-              <div class="input-affix">
-                <input id="targetGrams" type="number" min="0.0001" step="0.0001" inputmode="decimal" placeholder="e.g. 10" />
-                <span class="suffix">g</span>
-              </div>
-            </div>
-          </div>
-
+        <div class="field-grid" style="margin-top:18px">
           <div class="field">
-            <label class="field-label" for="monthlySaving">Monthly gold saving</label>
-            <div class="input-affix">
-              <input id="monthlySaving" type="number" min="0" step="1" inputmode="decimal" placeholder="e.g. 100" />
-              <span class="suffix">RM</span>
-            </div>
+            <label class="field-label" for="currentGrams">Current gold</label>
+            <div class="input-affix"><input id="currentGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 5.2500" /><span class="suffix">g</span></div>
           </div>
+          <div class="field">
+            <label class="field-label" for="targetGrams">Target</label>
+            <div class="input-affix"><input id="targetGrams" type="number" min="0.0001" step="0.0001" inputmode="decimal" placeholder="e.g. 10" /><span class="suffix">g</span></div>
+          </div>
+        </div>
+        <div class="field" style="margin-top:11px">
+          <label class="field-label" for="monthlySaving">Monthly gold saving</label>
+          <div class="input-affix"><input id="monthlySaving" type="number" min="0" step="1" inputmode="decimal" placeholder="e.g. 100" /><span class="suffix">RM</span></div>
         </div>
 
         <div class="progress-card">
-          <div class="progress-top">
-            <div class="progress-title">Goal progress</div>
-            <div class="progress-percent" id="progressPercent">0%</div>
-          </div>
-          <div class="bar" aria-hidden="true"><div class="bar-fill" id="barFill"></div></div>
+          <div class="progress-top"><div class="progress-title">Goal progress</div><div class="progress-percent" id="progressPercent">0%</div></div>
+          <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+          <div class="milestones" id="milestones"></div>
           <div class="progress-copy" id="progressCopy">Enter your current gold and target to start tracking.</div>
         </div>
 
         <div class="tracker-stats">
-          <div class="stat">
-            <div class="k">Current value</div>
-            <div class="v" id="currentValueMYR">RM0.00</div>
-            <div class="sub" id="currentValueBND">≈ B$0.00</div>
-          </div>
-          <div class="stat">
-            <div class="k">Gold remaining</div>
-            <div class="v" id="remainingGrams">0.0000g</div>
-            <div class="sub" id="remainingValue">RM0.00 remaining</div>
-          </div>
-          <div class="stat">
-            <div class="k">Estimated gold / month</div>
-            <div class="v" id="monthlyGrams">0.0000g</div>
-            <div class="sub" id="monthlyBnd">RM0 ≈ B$0.00</div>
-          </div>
-          <div class="stat">
-            <div class="k">Estimated time</div>
-            <div class="v" id="monthsToTarget">—</div>
-            <div class="sub">at the current entered monthly amount</div>
-          </div>
-          <div class="stat wide">
-            <div class="k">Target value at current price</div>
-            <div class="v" id="targetValueMYR">RM0.00</div>
-            <div class="sub" id="targetValueBND">≈ B$0.00</div>
-          </div>
+          <div class="stat"><div class="k">Current value</div><div class="v" id="currentValueMYR">RM0.00</div><div class="sub" id="currentValueBND">≈ B$0.00</div></div>
+          <div class="stat"><div class="k">Gold remaining</div><div class="v" id="remainingGrams">0.0000g</div><div class="sub" id="remainingValue">RM0.00 remaining</div></div>
+          <div class="stat"><div class="k">Estimated gold / month</div><div class="v" id="monthlyGrams">0.0000g</div><div class="sub" id="monthlyBnd">RM0 ≈ B$0.00</div></div>
+          <div class="stat"><div class="k">Estimated time</div><div class="v" id="monthsToTarget">—</div><div class="sub">at the current price and monthly amount</div></div>
+          <div class="stat wide"><div class="k">Target value at current price</div><div class="v" id="targetValueMYR">RM0.00</div><div class="sub" id="targetValueBND">≈ B$0.00</div></div>
         </div>
 
-        <div class="tracker-actions">
-          <button class="primary" id="saveTracker">Save My Progress</button>
-          <button class="secondary" id="resetTracker">Reset</button>
-        </div>
+        <div class="tracker-actions"><button class="primary" id="saveTracker">Save My Progress</button><button class="secondary" id="resetTracker">Reset</button></div>
         <div class="saved-msg" id="savedMsg"></div>
-
-        <p class="note">Your tracker is saved only in this browser on this device. It is not uploaded to Gold with Elleanor or Public Gold.</p>
+        <p class="note">Saved only in this browser on this device. Your tracker data is not sent to Gold with Elleanor or Public Gold.</p>
       </section>
     </section>
 
     <section class="panel" id="zakatPanel">
       <section class="card">
-        <div class="tracker-head">
-          <h2>Gold Zakat Calculator</h2>
-          <p>Estimate zakat on gold using the Brunei nisab reference of 85g, Brunei zakat gold price of B$158.39/g, and a 2.5% zakat rate.</p>
-        </div>
+        <h2 class="section-title">Brunei Gold Zakat Calculator</h2>
+        <p class="section-copy">A simple indicative calculator using the Brunei zakat gold price you provided.</p>
 
-        <div class="tracker-form">
-          <div class="field-grid">
-            <div class="field">
-              <label class="field-label" for="zakatGrams">Gold owned</label>
-              <div class="input-affix">
-                <input id="zakatGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 100" />
-                <span class="suffix">g</span>
-              </div>
-            </div>
-            <div class="field">
-              <label class="field-label">Nisab reference</label>
-              <input type="text" value="85g" disabled />
-            </div>
-            <div class="field">
-              <label class="field-label">Brunei zakat gold price</label>
-              <input type="text" value="B$158.39/g" disabled />
-            </div>
+        <div class="info-box"><strong>Reference used:</strong> Nisab 85g • Gold price B$158.39/g • Zakat rate 2.5% • Haul condition applies.</div>
+
+        <div class="field-grid" style="margin-top:16px">
+          <div class="field">
+            <label class="field-label" for="zakatGrams">Gold owned</label>
+            <div class="input-affix"><input id="zakatGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 100" /><span class="suffix">g</span></div>
           </div>
-
-          <label class="check-row">
-            <input id="haulComplete" type="checkbox" />
-            <span>I have held the qualifying gold for one complete haul (zakat year).</span>
-          </label>
+          <div class="field"><label class="field-label">Zakat gold price</label><input type="text" value="B$158.39/g" disabled /></div>
         </div>
+
+        <label class="check-row"><input id="haulComplete" type="checkbox" /><span>I have held the qualifying gold for one complete haul (zakat year).</span></label>
 
         <div class="zakat-result">
           <div class="starter-title">Estimated zakat payable</div>
@@ -404,232 +267,122 @@
           <div class="calc-result" id="zakatGold">0.0000g equivalent</div>
           <div class="calc-result" id="zakatStatus">Enter your gold holding to calculate.</div>
         </div>
-
-        <button class="primary" id="calculateZakat" style="width:100%; min-height:48px; margin-top:14px;">Calculate Zakat</button>
-
-        <p class="note">
-          This is an indicative calculator only. It uses B$158.39/g as the Brunei zakat gold price, 85g as the nisab reference, and a 2.5% zakat rate. Please confirm the latest official zakat gold price, nisab and applicable conditions with KHEU / Majlis Ugama Islam Brunei.
-        </p>
-        <a class="official-link" href="https://www.mora.gov.bn/SitePages/ZakatEmas.aspx" target="_blank" rel="noopener noreferrer">Open official Brunei Gold Zakat Calculator ↗</a>
+        <button class="primary" id="calculateZakat" style="width:100%;margin-top:13px">Calculate Zakat</button>
+        <p class="note">Indicative only. Confirm the latest official zakat gold price, nisab, haul and applicable conditions with KHEU / Majlis Ugama Islam Brunei.</p>
+        <a class="official-link" href="https://www.mora.gov.bn/SitePages/ZakatEmas.aspx" target="_blank" rel="noopener noreferrer">Open official Brunei Gold Zakat page ↗</a>
       </section>
     </section>
 
-    <footer>goldwithelleanor.bn</footer>
+    <section class="register-card">
+      <h3>Ready to start saving gold?</h3>
+      <p>Open a Public Gold account under Elleanor Khairunisa’s guidance, or message me if you need help with registration or your first purchase.</p>
+      <div class="register-actions">
+        <a class="register-link primary-link" href="https://pg2u.my/app/link/elleanorkhairunisa/register" target="_blank" rel="noopener noreferrer">Register — Age 18+</a>
+        <a class="register-link secondary-link" href="https://pg2u.my/app/link/elleanorkhairunisa/register18" target="_blank" rel="noopener noreferrer">Junior — Under 18</a>
+        <a class="register-link secondary-link full-link" href="https://pg2u.my/elleanorkhairunisa" target="_blank" rel="noopener noreferrer">Visit Elleanor's Public Gold Page</a>
+        <a class="register-link whatsapp-link full-link" href="https://wa.me/6738297497?text=Assalamualaikum%20Elleanor%2C%20I%27m%20interested%20to%20know%20more%20about%20saving%20gold%20with%20Public%20Gold." target="_blank" rel="noopener noreferrer">WhatsApp Elleanor for Guidance</a>
+      </div>
+    </section>
+
+    <footer>
+      Educational and indicative calculations only. Public Gold prices may change during the day; BND conversion rates may differ by bank, TNG, remittance or payment provider. Physical product prices may exclude Gold Premium. Gold with Elleanor is a Public Gold dealer page and does not provide independent financial advice.
+    </footer>
   </main>
 
-  <script>
-    const FALLBACK = { myr: 606, rate: 0.314032 };
-    const state = { myr: FALLBACK.myr, rate: FALLBACK.rate, bnd: FALLBACK.myr * FALLBACK.rate, isLive: false };
-    const el = (id) => document.getElementById(id);
-    const storageKey = 'goldWithElleanorTrackerV1';
+  <a class="floating-wa" href="https://wa.me/6738297497?text=Assalamualaikum%20Elleanor%2C%20I%27m%20interested%20to%20know%20more%20about%20saving%20gold%20with%20Public%20Gold." target="_blank" rel="noopener noreferrer">WhatsApp</a>
 
-    function formatTime(dateString) {
-      const d = dateString ? new Date(dateString) : new Date();
-      return new Intl.DateTimeFormat('en-BN', {
-        timeZone: 'Asia/Brunei',
-        day: '2-digit', month: 'short',
-        hour: '2-digit', minute: '2-digit'
-      }).format(d);
-    }
+<script>
+const FALLBACK={myr:606,rate:0.314};
+const state={myr:FALLBACK.myr,rate:FALLBACK.rate,bnd:FALLBACK.myr*FALLBACK.rate,isLive:false,products:{smallBars:[],goldBars:[],dinars:[]}};
+const el=id=>document.getElementById(id);
+const storageKey='goldWithElleanorTrackerV2';
 
-    function money(value, currency) {
-      if (!Number.isFinite(value)) value = 0;
-      return currency === 'BND' ? `B$${value.toFixed(2)}` : `RM${value.toFixed(2)}`;
-    }
+function money(v,c){v=Number.isFinite(v)?v:0;return c==='BND'?`B$${v.toFixed(2)}`:`RM${v.toFixed(2)}`}
+function formatTime(s){const d=s?new Date(s):new Date();return new Intl.DateTimeFormat('en-BN',{timeZone:'Asia/Brunei',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(d)}
 
-    function renderPrice(myr, rate, fetchedAt, isLive, publicGoldUpdatedAt) {
-      state.myr = Number(myr);
-      state.rate = Number(rate);
-      state.bnd = state.myr * state.rate;
-      state.isLive = Boolean(isLive);
+function renderProducts(){
+  const small=state.products.smallBars||[], bars=state.products.goldBars||[], dinars=state.products.dinars||[];
+  el('smallPriceRows').innerHTML=small.length?small.map(p=>`<tr><td>${p.label}</td><td><strong>RM${p.sell.toLocaleString()}</strong></td><td>B$${(p.sell*state.rate).toFixed(2)}</td></tr>`).join(''):'<tr><td colspan="3">Live product prices unavailable.</td></tr>';
+  el('barPriceRows').innerHTML=bars.length?bars.map(p=>`<tr><td>${p.label}</td><td><strong>RM${p.sell.toLocaleString()}</strong></td><td>${p.buy?`RM${p.buy.toLocaleString()}`:'—'}</td><td>B$${(p.sell*state.rate).toFixed(2)}</td></tr>`).join(''):'<tr><td colspan="4">Live product prices unavailable.</td></tr>';
+  el('dinarPriceRows').innerHTML=dinars.length?dinars.map(p=>`<tr><td>${p.label}</td><td><strong>RM${p.sell.toLocaleString()}</strong></td><td>${p.buy?`RM${p.buy.toLocaleString()}`:'—'}</td><td>B$${(p.sell*state.rate).toFixed(2)}</td></tr>`).join(''):'<tr><td colspan="4">Live product prices unavailable.</td></tr>';
+}
 
-      el('myrPrice').textContent = state.myr.toFixed(0);
-      el('bndPrice').textContent = state.bnd.toFixed(2);
-      el('rm100Grams').textContent = (100 / state.myr).toFixed(4);
-      el('rm100Bnd').textContent = `B$${(100 * state.rate).toFixed(2)}`;
-      el('fxRate').textContent = `RM1 = B$${state.rate.toFixed(4)}`;
-      el('publicGoldUpdated').textContent = publicGoldUpdatedAt || (isLive ? 'Live source' : 'Fallback value');
-      const status = el('liveStatus');
-      if (isLive) {
-        status.innerHTML = '<span class="dot"></span> LIVE FROM PUBLIC GOLD';
-        status.style.color = 'var(--ok)';
-      } else {
-        status.innerHTML = '<span class="dot"></span> FALLBACK PRICE';
-        status.style.color = 'var(--danger)';
-      }
-      updateTracker();
-      if (document.getElementById('zakatGrams')) calculateZakat();
-    }
+function renderPrice(data,isLive){
+  state.myr=Number(data.goldPriceMYR||FALLBACK.myr);state.rate=Number(data.myrToBnd||FALLBACK.rate);state.bnd=state.myr*state.rate;state.isLive=isLive;
+  state.products=data.products||state.products;
+  el('myrPrice').textContent=state.myr.toFixed(0);el('bndPrice').textContent=state.bnd.toFixed(2);el('rm100Grams').textContent=(100/state.myr).toFixed(4);
+  el('rm100Bnd').textContent=`B$${(100*state.rate).toFixed(2)}`;el('fxRate').textContent=`RM1 = B$${state.rate.toFixed(4)}`;el('publicGoldUpdated').textContent=data.publicGoldUpdatedAt||'—';
+  el('liveStatus').innerHTML=`<span class="dot"></span> ${isLive?'LIVE FROM PUBLIC GOLD':'FALLBACK PRICE'}`;el('liveStatus').style.color=isLive?'var(--ok)':'var(--danger)';
+  el('productStatus').innerHTML=`<span class="dot"></span> ${isLive?'LIVE FROM PUBLIC GOLD':'UNAVAILABLE'}`;el('productStatus').style.color=isLive?'var(--ok)':'var(--danger)';el('productUpdated').textContent=data.publicGoldUpdatedAt||'—';
+  renderProducts();updateTracker();calculateZakat();calculateBudget();
+}
 
-    async function loadPrice() {
-      renderPrice(FALLBACK.myr, FALLBACK.rate, null, false, null);
-      el('priceCard').classList.add('loading');
-      el('priceNote').classList.remove('error');
-      try {
-        const res = await fetch('/api/gold-price', { cache: 'no-store' });
-        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-        const data = await res.json();
-        renderPrice(data.goldPriceMYR, data.myrToBnd, data.fetchedAt, true, data.publicGoldUpdatedAt);
-        el('priceNote').textContent = `Live price fetched from Public Gold. Checked ${formatTime(data.fetchedAt)} Brunei time. BND is an indicative conversion only; your payment provider may use a different exchange rate.`;
-      } catch (err) {
-        console.error(err);
-        el('priceNote').textContent = 'Live connection is not running here, so the page is using the fallback price RM606/g and RM1 = B$0.314032. Deploy the full folder to Vercel to enable automatic live updates.';
-        el('priceNote').classList.add('error');
-      } finally {
-        el('priceCard').classList.remove('loading');
-      }
-    }
+async function loadPrice(){
+  renderPrice({goldPriceMYR:FALLBACK.myr,myrToBnd:FALLBACK.rate,publicGoldUpdatedAt:'Fallback',products:{smallBars:[],goldBars:[],dinars:[]}},false);
+  el('priceCard').classList.add('loading');
+  try{
+    const res=await fetch('/api/gold-price',{cache:'no-store'}); if(!res.ok)throw new Error(`Request failed: ${res.status}`);
+    const data=await res.json(); renderPrice(data,true);
+    el('priceNote').textContent=`Live price fetched from Public Gold. Checked ${formatTime(data.fetchedAt)} Brunei time. BND is an indicative conversion only.`;
+    el('priceNote').classList.remove('error');
+  }catch(err){
+    console.error(err);el('priceNote').textContent='Live connection could not be reached, so the GAP card is using a fallback reference. Physical product prices are hidden until the Public Gold live feed is available.';el('priceNote').classList.add('error')
+  }finally{el('priceCard').classList.remove('loading')}
+}
 
-    function calculate() {
-      const grams = Number(el('grams').value);
-      if (!Number.isFinite(state.bnd) || !Number.isFinite(grams) || grams <= 0) {
-        el('calcResult').textContent = 'Enter a valid number of grams.';
-        return;
-      }
-      el('calcResult').textContent = `${grams.toLocaleString()}g ≈ B$${(grams * state.bnd).toFixed(2)} • RM${(grams * state.myr).toFixed(2)}`;
-    }
+function calculateBudget(){
+  const amount=Math.max(0,Number(el('budgetRM').value)||0);
+  if(!amount){el('budgetResult').textContent='Enter an amount to see the estimated grams.';return}
+  const grams=amount/state.myr;const bnd=amount*state.rate;
+  el('budgetResult').innerHTML=`<strong>${grams.toFixed(4)}g</strong><br><span class="caption">RM${amount.toFixed(2)} ≈ B$${bnd.toFixed(2)} at the current reference rate.</span>`;
+}
+function calculate(){
+  const grams=Number(el('grams').value);if(!Number.isFinite(grams)||grams<=0){el('calcResult').textContent='Enter a valid number of grams.';return}
+  el('calcResult').textContent=`${grams.toLocaleString()}g ≈ ${money(grams*state.myr,'MYR')} • ${money(grams*state.bnd,'BND')}`;
+}
 
-    function getTrackerValues() {
-      return {
-        current: Math.max(0, Number(el('currentGrams').value) || 0),
-        target: Math.max(0, Number(el('targetGrams').value) || 0),
-        monthly: Math.max(0, Number(el('monthlySaving').value) || 0)
-      };
-    }
+function trackerValues(){return{current:Math.max(0,Number(el('currentGrams').value)||0),target:Math.max(0,Number(el('targetGrams').value)||0),monthly:Math.max(0,Number(el('monthlySaving').value)||0)}}
+function updateMilestones(current){
+  const vals=[1,5,10,20,50,100,250];el('milestones').innerHTML=vals.map(v=>`<span class="milestone ${current>=v?'reached':''}">${v}g${current>=v?' ✓':''}</span>`).join('')
+}
+function updateTracker(){
+  const{current,target,monthly}=trackerValues();const raw=target>0?(current/target)*100:0;const progress=Math.min(100,Math.max(0,raw));const remaining=target>0?Math.max(0,target-current):0;
+  const currentM=current*state.myr,currentB=currentM*state.rate,remainingM=remaining*state.myr,monthlyG=state.myr>0?monthly/state.myr:0,months=remaining>0&&monthlyG>0?Math.ceil(remaining/monthlyG):0,targetM=target*state.myr,targetB=targetM*state.rate;
+  el('progressPercent').textContent=`${progress.toFixed(progress>=10?0:1)}%`;el('barFill').style.width=`${progress}%`;updateMilestones(current);
+  el('progressCopy').textContent=target<=0?'Enter your current gold and target to start tracking.':remaining<=0?`Target reached — ${current.toFixed(4)}g saved.`:`${current.toFixed(4)}g of ${target.toFixed(4)}g saved.`;
+  el('currentValueMYR').textContent=money(currentM,'MYR');el('currentValueBND').textContent=`≈ ${money(currentB,'BND')}`;el('remainingGrams').textContent=`${remaining.toFixed(4)}g`;el('remainingValue').textContent=`${money(remainingM,'MYR')} remaining`;
+  el('monthlyGrams').textContent=`${monthlyG.toFixed(4)}g`;el('monthlyBnd').textContent=`${money(monthly,'MYR')} ≈ ${money(monthly*state.rate,'BND')}`;el('monthsToTarget').textContent=remaining<=0&&target>0?'Target reached':months>0?`≈ ${months} month${months===1?'':'s'}`:'—';
+  el('targetValueMYR').textContent=money(targetM,'MYR');el('targetValueBND').textContent=`≈ ${money(targetB,'BND')}`;
+}
+function saveTracker(){localStorage.setItem(storageKey,JSON.stringify({currentGrams:el('currentGrams').value,targetGrams:el('targetGrams').value,monthlySaving:el('monthlySaving').value}));el('savedMsg').textContent='Progress saved on this device ✓';setTimeout(()=>el('savedMsg').textContent='',2200)}
+function loadTracker(){try{const s=JSON.parse(localStorage.getItem(storageKey)||'null');if(s){el('currentGrams').value=s.currentGrams||'';el('targetGrams').value=s.targetGrams||'';el('monthlySaving').value=s.monthlySaving||''}}catch(_){}updateTracker()}
+function resetTracker(){['currentGrams','targetGrams','monthlySaving'].forEach(i=>el(i).value='');localStorage.removeItem(storageKey);updateTracker();el('savedMsg').textContent='Tracker reset.';setTimeout(()=>el('savedMsg').textContent='',1600)}
 
-    function updateTracker() {
-      const { current, target, monthly } = getTrackerValues();
-      const progressRaw = target > 0 ? (current / target) * 100 : 0;
-      const progress = Math.min(100, Math.max(0, progressRaw));
-      const remaining = target > 0 ? Math.max(0, target - current) : 0;
-      const currentMyr = current * state.myr;
-      const currentBnd = currentMyr * state.rate;
-      const remainingMyr = remaining * state.myr;
-      const monthlyGrams = state.myr > 0 ? monthly / state.myr : 0;
-      const months = remaining > 0 && monthlyGrams > 0 ? Math.ceil(remaining / monthlyGrams) : 0;
-      const targetMyr = target * state.myr;
-      const targetBnd = targetMyr * state.rate;
+function calculateZakat(){
+  const grams=Math.max(0,Number(el('zakatGrams').value)||0),haul=el('haulComplete').checked,nisab=85,zakatGoldPriceBND=158.39,rate=.025;
+  if(!grams){el('zakatBnd').textContent='B$0.00';el('zakatMyr').textContent='RM0.00 equivalent';el('zakatGold').textContent='0.0000g equivalent';el('zakatStatus').textContent='Enter your gold holding to calculate.';return}
+  if(grams<nisab){el('zakatBnd').textContent='B$0.00';el('zakatMyr').textContent='RM0.00 equivalent';el('zakatGold').textContent='0.0000g equivalent';el('zakatStatus').textContent=`Below the 85g nisab reference (${grams.toFixed(4)}g entered).`;return}
+  if(!haul){el('zakatBnd').textContent='B$0.00';el('zakatMyr').textContent='RM0.00 equivalent';el('zakatGold').textContent='0.0000g equivalent';el('zakatStatus').textContent='Nisab is reached, but haul is not marked as complete.';return}
+  const zg=grams*rate,zb=grams*zakatGoldPriceBND*rate,zm=state.rate>0?zb/state.rate:0;el('zakatBnd').textContent=`B$${zb.toFixed(2)}`;el('zakatMyr').textContent=`RM${zm.toFixed(2)} equivalent`;el('zakatGold').textContent=`${zg.toFixed(4)}g equivalent`;el('zakatStatus').textContent='Calculated at 2.5% using B$158.39/g.'
+}
 
-      el('progressPercent').textContent = `${progress.toFixed(progress >= 10 ? 0 : 1)}%`;
-      el('barFill').style.width = `${progress}%`;
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');el(b.dataset.tab).classList.add('active');window.scrollTo({top:document.querySelector('.tabs').offsetTop-8,behavior:'smooth'})}));
+document.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>{el('budgetRM').value=b.dataset.amount;calculateBudget()}));
+el('budgetCalc').addEventListener('click',calculateBudget);el('budgetRM').addEventListener('input',calculateBudget);el('calculate').addEventListener('click',calculate);el('grams').addEventListener('keydown',e=>{if(e.key==='Enter')calculate()});
+['currentGrams','targetGrams','monthlySaving'].forEach(i=>el(i).addEventListener('input',updateTracker));el('saveTracker').addEventListener('click',saveTracker);el('resetTracker').addEventListener('click',resetTracker);
+el('calculateZakat').addEventListener('click',calculateZakat);el('zakatGrams').addEventListener('input',calculateZakat);el('haulComplete').addEventListener('change',calculateZakat);
 
-      if (target <= 0) {
-        el('progressCopy').textContent = 'Enter your current gold and target to start tracking.';
-      } else if (remaining <= 0) {
-        el('progressCopy').textContent = `Target reached — ${current.toFixed(4)}g saved.`;
-      } else {
-        el('progressCopy').textContent = `${current.toFixed(4)}g of ${target.toFixed(4)}g saved.`;
-      }
+el('shareBtn').addEventListener('click',async()=>{try{if(navigator.share)await navigator.share({title:'Gold with Elleanor',url:location.href});else{await navigator.clipboard.writeText(location.href);el('shareBtn').textContent='Link copied ✓';setTimeout(()=>el('shareBtn').textContent='Share this page',1600)}}catch(_){}});
+el('copyBtn').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);el('copyBtn').textContent='Copied ✓';setTimeout(()=>el('copyBtn').textContent='Copy link',1600)}catch(_){}});
 
-      el('currentValueMYR').textContent = money(currentMyr, 'MYR');
-      el('currentValueBND').textContent = `≈ ${money(currentBnd, 'BND')}`;
-      el('remainingGrams').textContent = `${remaining.toFixed(4)}g`;
-      el('remainingValue').textContent = `${money(remainingMyr, 'MYR')} remaining`;
-      el('monthlyGrams').textContent = `${monthlyGrams.toFixed(4)}g`;
-      el('monthlyBnd').textContent = `${money(monthly, 'MYR')} ≈ ${money(monthly * state.rate, 'BND')}`;
-      el('monthsToTarget').textContent = remaining <= 0 && target > 0 ? 'Target reached' : (months > 0 ? `≈ ${months} month${months === 1 ? '' : 's'}` : '—');
-      el('targetValueMYR').textContent = money(targetMyr, 'MYR');
-      el('targetValueBND').textContent = `≈ ${money(targetBnd, 'BND')}`;
-    }
+const savedTheme=localStorage.getItem('gweTheme');if(savedTheme==='dark'){document.documentElement.dataset.theme='dark';el('themeBtn').textContent='Light mode'}
+el('themeBtn').addEventListener('click',()=>{const dark=document.documentElement.dataset.theme==='dark';document.documentElement.dataset.theme=dark?'':'dark';localStorage.setItem('gweTheme',dark?'light':'dark');el('themeBtn').textContent=dark?'Dark mode':'Light mode'});
 
-    function saveTracker() {
-      const values = {
-        currentGrams: el('currentGrams').value,
-        targetGrams: el('targetGrams').value,
-        monthlySaving: el('monthlySaving').value
-      };
-      localStorage.setItem(storageKey, JSON.stringify(values));
-      el('savedMsg').textContent = 'Progress saved on this device ✓';
-      setTimeout(() => el('savedMsg').textContent = '', 2400);
-    }
+let deferredPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;el('installBtn').hidden=false});
+el('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;el('installBtn').hidden=true});
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 
-    function loadTracker() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
-        if (!saved) return;
-        el('currentGrams').value = saved.currentGrams || '';
-        el('targetGrams').value = saved.targetGrams || '';
-        el('monthlySaving').value = saved.monthlySaving || '';
-      } catch (_) {}
-      updateTracker();
-    }
-
-    function resetTracker() {
-      el('currentGrams').value = '';
-      el('targetGrams').value = '';
-      el('monthlySaving').value = '';
-      localStorage.removeItem(storageKey);
-      el('savedMsg').textContent = 'Tracker reset.';
-      updateTracker();
-      setTimeout(() => el('savedMsg').textContent = '', 1800);
-    }
-
-    document.querySelectorAll('.tab-btn').forEach((button) => {
-      button.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        button.classList.add('active');
-        el(button.dataset.tab).classList.add('active');
-      });
-    });
-
-    
-    function calculateZakat() {
-      const grams = Math.max(0, Number(el('zakatGrams').value) || 0);
-      const haul = el('haulComplete').checked;
-      const nisab = 85;
-      const zakatGoldPriceBND = 158.39;
-      const rate = 0.025;
-
-      if (!grams) {
-        el('zakatBnd').textContent = 'B$0.00';
-        el('zakatMyr').textContent = 'RM0.00 equivalent';
-        el('zakatGold').textContent = '0.0000g equivalent';
-        el('zakatStatus').textContent = 'Enter your gold holding to calculate.';
-        return;
-      }
-
-      if (grams < nisab) {
-        el('zakatBnd').textContent = 'B$0.00';
-        el('zakatMyr').textContent = 'RM0.00 equivalent';
-        el('zakatGold').textContent = '0.0000g equivalent';
-        el('zakatStatus').textContent = `Below the 85g nisab reference (${grams.toFixed(4)}g entered).`;
-        return;
-      }
-
-      if (!haul) {
-        el('zakatBnd').textContent = 'B$0.00';
-        el('zakatMyr').textContent = 'RM0.00 equivalent';
-        el('zakatGold').textContent = '0.0000g equivalent';
-        el('zakatStatus').textContent = 'Nisab is reached, but haul is not marked as complete.';
-        return;
-      }
-
-      const zakatGrams = grams * rate;
-      const goldValueBND = grams * zakatGoldPriceBND;
-      const zakatBND = goldValueBND * rate;
-      const zakatMYR = state.rate > 0 ? zakatBND / state.rate : 0;
-
-      el('zakatBnd').textContent = `B$${zakatBND.toFixed(2)}`;
-      el('zakatMyr').textContent = `RM${zakatMYR.toFixed(2)} equivalent`;
-      el('zakatGold').textContent = `${zakatGrams.toFixed(4)}g equivalent`;
-      el('zakatStatus').textContent = `2.5% of the gold value using B$158.39/g for Brunei zakat calculation.`;
-    }
-
-
-    el('calculateZakat').addEventListener('click', calculateZakat);
-    el('zakatGrams').addEventListener('input', calculateZakat);
-    el('haulComplete').addEventListener('change', calculateZakat);
-
-    el('calculate').addEventListener('click', calculate);
-    el('grams').addEventListener('keydown', (e) => { if (e.key === 'Enter') calculate(); });
-    ['currentGrams', 'targetGrams', 'monthlySaving'].forEach(id => el(id).addEventListener('input', updateTracker));
-    el('saveTracker').addEventListener('click', saveTracker);
-    el('resetTracker').addEventListener('click', resetTracker);
-
-    loadTracker();
-    loadPrice();
-    setInterval(loadPrice, 5 * 60 * 1000);
-  </script>
+loadTracker();loadPrice();setInterval(loadPrice,5*60*1000);
+</script>
 </body>
 </html>
