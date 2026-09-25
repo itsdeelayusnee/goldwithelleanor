@@ -174,6 +174,16 @@
     .private-gate-btn{width:100%;min-height:50px;border:0;border-radius:14px;margin-top:10px;background:linear-gradient(135deg,#d7aa4a,#9b6f1c);color:#fff;font-weight:900;cursor:pointer}
     .private-gate-error{min-height:18px;margin:10px 0 0!important;color:#ef8f84!important;font-size:12px!important}
     .private-gate-note{margin-top:15px!important;font-size:10.5px!important;color:#907f68!important}
+    .access-role-badge{display:none;align-items:center;gap:7px;margin:10px auto 0;width:max-content;max-width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:var(--soft);font-size:10.5px;font-weight:900;color:var(--gold-dark)}
+    .access-role-badge.show{display:inline-flex}
+    .role-note{display:none;margin:12px 0 0;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:var(--soft);font-size:11.5px;line-height:1.5;color:var(--muted)}
+    .role-note.show{display:block}
+    .feedback-card{margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--card);text-align:center}
+    .feedback-card strong{display:block;font-size:13px;color:var(--ink)}
+    .feedback-card p{margin:6px auto 10px;max-width:420px;color:var(--muted);font-size:11.5px;line-height:1.5}
+    .feedback-btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 16px;border-radius:12px;border:0;background:linear-gradient(135deg,#d7aa4a,#9b6f1c);color:#fff;text-decoration:none;font-size:12px;font-weight:900}
+
+
 
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -183,13 +193,13 @@
   <section class="private-gate" id="privateGate" aria-label="Private preview access">
     <div class="private-gate-card">
       <img class="private-gate-logo" src="logo.png" alt="Gold with Elleanor" />
-      <div class="private-gate-eyebrow">Gold Savers Access</div>
-      <h2>Private Preview</h2>
-      <p>This website is still in development and is currently shared privately with selected Gold with Elleanor savers.</p>
+      <div class="private-gate-eyebrow">Private Preview</div>
+      <h2>Gold Saver Access</h2>
+      <p>Enter the access code provided by Elleanor. Your code determines which version of the website you see.</p>
       <input class="private-gate-input" id="privateAccessCode" type="password" autocomplete="off" inputmode="text" placeholder="Enter access code" aria-label="Access code" />
       <button class="private-gate-btn" id="privateAccessBtn" type="button">Enter Website</button>
       <p class="private-gate-error" id="privateAccessError"></p>
-      <p class="private-gate-note">Please do not share the access code outside the saver community.</p>
+      <p class="private-gate-note">Please keep your access code private while the website is still in development.</p>
     </div>
   </section>
 
@@ -215,8 +225,11 @@
       </div>
     </section>
 
+    <div class="access-role-badge" id="accessRoleBadge"></div>
+    <div class="role-note" id="accessRoleNote"></div>
 
     <section class="intro">
+      <div class="pg-code-badge" style="margin-bottom:10px">Private Beta • In Development</div>
       <strong>Small steps, bigger future.</strong>
       <p>Use these tools to understand today’s Public Gold price, estimate how much gold your budget can buy, track your target and calculate an indicative Brunei gold zakat amount.</p>
     </section>
@@ -580,7 +593,18 @@
       </section>
     </section>
 
-    <section class="register-card">
+    <section class="feedback-card">
+      <strong>Help me improve Gold with Elleanor 🤎</strong>
+      <p>Found something confusing, inaccurate or have an idea for a useful feature? I’d really appreciate your feedback while the website is still in development.</p>
+      <a class="feedback-btn" href="https://wa.me/6738297497?text=Assalamualaikum%20Elleanor%2C%20I%27d%20like%20to%20share%20feedback%20about%20the%20Gold%20with%20Elleanor%20website%3A%20" target="_blank" rel="noopener noreferrer">Send Feedback on WhatsApp</a>
+    </section>
+
+    <section class="register-card" id="existingDealerNote" hidden>
+      <h3>Already have a Public Gold dealer?</h3>
+      <p>You’re welcome to use the tools here. Please continue referring to your own dealer for registration, account servicing and dealer-specific guidance.</p>
+    </section>
+
+    <section class="register-card" id="registrationCard">
       <h3>Ready to start saving gold?</h3>
       <p>Open a Public Gold account under Elleanor Khairunisa’s guidance, or message me if you need help with registration or your first purchase.</p>
       <div class="register-actions">
@@ -983,31 +1007,70 @@ el('authEmail').addEventListener('keydown',e=>{if(e.key==='Enter')sendMagicLink(
 el('signOutBtn').addEventListener('click',async()=>{await supabaseClient.auth.signOut();setAuthUI(null);await loadTracker()});
 
 
-// Private preview gate (light access protection for the development preview)
-const PRIVATE_PREVIEW_CODE='GWE2026';
-const PRIVATE_PREVIEW_KEY='gwePrivatePreviewAccess';
-function unlockPrivatePreview(){
-  const gate=el('privateGate');
-  if(gate) gate.hidden=true;
+// Private preview gate with 3 access paths
+// These are lightweight client-side preview codes and can be changed later.
+const ACCESS_CODES={
+  'GWE2026':'my_saver',
+  'TOOL2026':'other_saver',
+  'STARTGOLD2026':'prospect'
+};
+const PRIVATE_PREVIEW_KEY='gwePrivatePreviewRole';
+
+function applyAccessRole(role){
+  const badge=el('accessRoleBadge');
+  const note=el('accessRoleNote');
+  const registration=el('registrationCard');
+  const existingNote=el('existingDealerNote');
+
+  if(badge){ badge.classList.add('show'); }
+  if(note){ note.classList.add('show'); }
+  if(existingNote){ existingNote.hidden=true; }
+
+  if(role==='my_saver'){
+    if(badge)badge.textContent='✓ Gold with Elleanor Saver Access';
+    if(note)note.textContent='Welcome back. Your saver access includes the full tools and direct guidance from Elleanor.';
+    if(registration)registration.hidden=true;
+  }else if(role==='other_saver'){
+    if(badge)badge.textContent='Gold Saver Toolkit Access';
+    if(note)note.textContent='You already have a Public Gold dealer, so dealer registration prompts are hidden. You can still use the calculators, tracker and zakat tools.';
+    if(registration)registration.hidden=true;
+    if(existingNote)existingNote.hidden=false;
+  }else{
+    if(badge)badge.textContent='New to Public Gold';
+    if(note)note.textContent='Explore the tools first. If you do not have a dealer yet, you can register under Elleanor or WhatsApp her for guidance.';
+    if(registration)registration.hidden=false;
+  }
 }
+
+function unlockPrivatePreview(role){
+  const gate=el('privateGate');
+  if(gate)gate.hidden=true;
+  applyAccessRole(role);
+}
+
 function checkPrivatePreviewAccess(){
   try{
-    if(localStorage.getItem(PRIVATE_PREVIEW_KEY)==='granted') unlockPrivatePreview();
+    const role=localStorage.getItem(PRIVATE_PREVIEW_KEY);
+    if(role && ['my_saver','other_saver','prospect'].includes(role)) unlockPrivatePreview(role);
   }catch(_){}
 }
+
 function submitPrivatePreviewCode(){
   const input=el('privateAccessCode');
   const error=el('privateAccessError');
   if(!input)return;
-  if(input.value.trim()===PRIVATE_PREVIEW_CODE){
-    try{localStorage.setItem(PRIVATE_PREVIEW_KEY,'granted')}catch(_){}
+  const code=input.value.trim().toUpperCase();
+  const role=ACCESS_CODES[code];
+  if(role){
+    try{localStorage.setItem(PRIVATE_PREVIEW_KEY,role)}catch(_){}
     if(error)error.textContent='';
-    unlockPrivatePreview();
+    unlockPrivatePreview(role);
   }else{
     if(error)error.textContent='Incorrect access code. Please check with Elleanor.';
     input.select();
   }
 }
+
 el('privateAccessBtn')?.addEventListener('click',submitPrivatePreviewCode);
 el('privateAccessCode')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitPrivatePreviewCode()});
 checkPrivatePreviewAccess();
