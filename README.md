@@ -23,3 +23,11 @@ This build unregisters the previous service worker and clears old browser caches
 - Annual Gold Saving Projection for 1, 3, 5 and 10 years based on the current gold price and monthly saving amount.
 
 - Professional About Elleanor / My Gold Journey section with dealer credibility, community experience and CTA.
+
+- Removed duplicate registration/WhatsApp CTA from the About section so the global registration card appears only once.
+
+- Updated personal gold accumulation figure to 229.6792g.
+
+- Tracker reorganized into separate Total Gram, Target, and Annual sections while retaining the same guest/cloud saved data.
+
+- Tracker reordered: monthly saving and annual projection first, then current gold and target immediately above gold progress.

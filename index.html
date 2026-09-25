@@ -114,6 +114,16 @@
     .about-quote{margin-top:16px;border-left:3px solid var(--gold);padding:10px 0 10px 14px;color:var(--ink);font-family:Georgia,serif;font-size:17px;line-height:1.5}
     @media(max-width:430px){.credentials{grid-template-columns:1fr}.tabs{grid-template-columns:repeat(3,1fr)}}
 
+  
+    .tracker-subtabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:16px 0 14px;padding:5px;border:1px solid var(--line);border-radius:15px;background:var(--soft)}
+    .tracker-subbtn{border:0;border-radius:11px;min-height:40px;padding:7px;font-size:11px;font-weight:850;cursor:pointer;color:var(--muted);background:transparent}
+    .tracker-subbtn.active{color:#fff;background:linear-gradient(135deg,#bd9138,#8f681e)}
+    .tracker-subpanel{display:none}.tracker-subpanel.active{display:block}
+    .tracker-section-card{border:1px solid var(--line);border-radius:18px;padding:16px;background:linear-gradient(135deg,var(--soft),var(--card))}
+    .tracker-section-card + .tracker-section-card{margin-top:12px}
+    .tracker-section-title{margin:0;font-family:Georgia,serif;font-size:20px;font-weight:500}
+    .tracker-section-copy{margin:5px 0 13px;color:var(--muted);font-size:11.5px;line-height:1.5}
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -267,57 +277,105 @@
     <section class="panel" id="trackerPanel">
       <section class="card">
         <h2 class="section-title">Gold Saving Tracker</h2>
-        <p class="section-copy">Set your goal, see your estimated value and keep your progress saved on this device or sync it securely when signed in.</p>
+        <p class="section-copy">Start with your monthly saving plan, then compare it with your current gold and target progress.</p>
         <div class="sync-badge local" id="syncBadge">📱 Saved on this device only</div>
 
-        <div class="field-grid" style="margin-top:18px">
+        <div class="tracker-section-card" style="margin-top:16px">
+          <h3 class="tracker-section-title">Monthly Gold Saving</h3>
+          <p class="tracker-section-copy">Enter how much you plan to save each month to estimate your possible gold accumulation over time.</p>
+
           <div class="field">
-            <label class="field-label" for="currentGrams">Current gold</label>
-            <div class="input-affix"><input id="currentGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 5.2500" /><span class="suffix">g</span></div>
+            <label class="field-label" for="monthlySaving">Monthly gold saving</label>
+            <div class="input-affix">
+              <input id="monthlySaving" type="number" min="0" step="1" inputmode="decimal" placeholder="e.g. 100" />
+              <span class="suffix">RM</span>
+            </div>
           </div>
-          <div class="field">
-            <label class="field-label" for="targetGrams">Target</label>
-            <div class="input-affix"><input id="targetGrams" type="number" min="0.0001" step="0.0001" inputmode="decimal" placeholder="e.g. 10" /><span class="suffix">g</span></div>
+
+          <div class="tracker-stats">
+            <div class="stat wide">
+              <div class="k">Estimated gold / month</div>
+              <div class="v" id="monthlyGrams">0.0000g</div>
+              <div class="sub" id="monthlyBnd">RM0 ≈ B$0.00</div>
+            </div>
+          </div>
+
+          <div class="projection-card">
+            <div class="projection-head">
+              <h3>Annual Gold Saving Projection</h3>
+              <p>Based on today’s Public Gold price and the same monthly saving amount.</p>
+            </div>
+            <div class="projection-grid">
+              <div class="projection-item"><div class="yr">1 Year</div><div class="grams" id="proj1y">0.0000g</div><div class="value" id="proj1yValue">RM0.00</div></div>
+              <div class="projection-item"><div class="yr">3 Years</div><div class="grams" id="proj3y">0.0000g</div><div class="value" id="proj3yValue">RM0.00</div></div>
+              <div class="projection-item"><div class="yr">5 Years</div><div class="grams" id="proj5y">0.0000g</div><div class="value" id="proj5yValue">RM0.00</div></div>
+              <div class="projection-item"><div class="yr">10 Years</div><div class="grams" id="proj10y">0.0000g</div><div class="value" id="proj10yValue">RM0.00</div></div>
+            </div>
+            <div class="projection-note">Projection assumes today’s gold price stays unchanged. Actual grams accumulated will vary as Public Gold prices change over time.</div>
           </div>
         </div>
-        <div class="field" style="margin-top:11px">
-          <label class="field-label" for="monthlySaving">Monthly gold saving</label>
-          <div class="input-affix"><input id="monthlySaving" type="number" min="0" step="1" inputmode="decimal" placeholder="e.g. 100" /><span class="suffix">RM</span></div>
-        </div>
 
+        <div class="tracker-section-card">
+          <h3 class="tracker-section-title">Current Gold & Target</h3>
+          <p class="tracker-section-copy">Enter your current total gold and the target you want to reach.</p>
 
-        <div class="projection-card">
-          <div class="projection-head">
-            <h3>Annual Gold Saving Projection</h3>
-            <p>Estimated grams if you keep saving the same amount every month at today’s Public Gold price.</p>
+          <div class="field-grid">
+            <div class="field">
+              <label class="field-label" for="currentGrams">Current gold</label>
+              <div class="input-affix">
+                <input id="currentGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 229.6792" />
+                <span class="suffix">g</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="targetGrams">Target</label>
+              <div class="input-affix">
+                <input id="targetGrams" type="number" min="0.0001" step="0.0001" inputmode="decimal" placeholder="e.g. 250" />
+                <span class="suffix">g</span>
+              </div>
+            </div>
           </div>
-          <div class="projection-grid">
-            <div class="projection-item"><div class="yr">1 Year</div><div class="grams" id="proj1y">0.0000g</div><div class="value" id="proj1yValue">RM0.00</div></div>
-            <div class="projection-item"><div class="yr">3 Years</div><div class="grams" id="proj3y">0.0000g</div><div class="value" id="proj3yValue">RM0.00</div></div>
-            <div class="projection-item"><div class="yr">5 Years</div><div class="grams" id="proj5y">0.0000g</div><div class="value" id="proj5yValue">RM0.00</div></div>
-            <div class="projection-item"><div class="yr">10 Years</div><div class="grams" id="proj10y">0.0000g</div><div class="value" id="proj10yValue">RM0.00</div></div>
+
+          <div class="progress-card">
+            <div class="progress-top">
+              <div class="progress-title">Gold progress</div>
+              <div class="progress-percent" id="progressPercent">0%</div>
+            </div>
+            <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+            <div class="milestones" id="milestones"></div>
+            <div class="progress-copy" id="progressCopy">Enter your current gold and target to start tracking.</div>
           </div>
-          <div class="projection-note">Projection assumes today’s gold price stays unchanged. Actual grams accumulated will vary as Public Gold prices change over time.</div>
+
+          <div class="tracker-stats">
+            <div class="stat">
+              <div class="k">Current value</div>
+              <div class="v" id="currentValueMYR">RM0.00</div>
+              <div class="sub" id="currentValueBND">≈ B$0.00</div>
+            </div>
+            <div class="stat">
+              <div class="k">Gold remaining</div>
+              <div class="v" id="remainingGrams">0.0000g</div>
+              <div class="sub" id="remainingValue">RM0.00 remaining</div>
+            </div>
+            <div class="stat">
+              <div class="k">Estimated time</div>
+              <div class="v" id="monthsToTarget">—</div>
+              <div class="sub">based on your monthly saving</div>
+            </div>
+            <div class="stat">
+              <div class="k">Target value</div>
+              <div class="v" id="targetValueMYR">RM0.00</div>
+              <div class="sub" id="targetValueBND">≈ B$0.00</div>
+            </div>
+          </div>
         </div>
 
-        <div class="progress-card">
-          <div class="progress-top"><div class="progress-title">Goal progress</div><div class="progress-percent" id="progressPercent">0%</div></div>
-          <div class="bar"><div class="bar-fill" id="barFill"></div></div>
-          <div class="milestones" id="milestones"></div>
-          <div class="progress-copy" id="progressCopy">Enter your current gold and target to start tracking.</div>
+        <div class="tracker-actions">
+          <button class="primary" id="saveTracker">Save My Progress</button>
+          <button class="secondary" id="resetTracker">Reset</button>
         </div>
-
-        <div class="tracker-stats">
-          <div class="stat"><div class="k">Current value</div><div class="v" id="currentValueMYR">RM0.00</div><div class="sub" id="currentValueBND">≈ B$0.00</div></div>
-          <div class="stat"><div class="k">Gold remaining</div><div class="v" id="remainingGrams">0.0000g</div><div class="sub" id="remainingValue">RM0.00 remaining</div></div>
-          <div class="stat"><div class="k">Estimated gold / month</div><div class="v" id="monthlyGrams">0.0000g</div><div class="sub" id="monthlyBnd">RM0 ≈ B$0.00</div></div>
-          <div class="stat"><div class="k">Estimated time</div><div class="v" id="monthsToTarget">—</div><div class="sub">at the current price and monthly amount</div></div>
-          <div class="stat wide"><div class="k">Target value at current price</div><div class="v" id="targetValueMYR">RM0.00</div><div class="sub" id="targetValueBND">≈ B$0.00</div></div>
-        </div>
-
-        <div class="tracker-actions"><button class="primary" id="saveTracker">Save My Progress</button><button class="secondary" id="resetTracker">Reset</button></div>
         <div class="saved-msg" id="savedMsg"></div>
-        <p class="note">Saved only in this browser on this device. Your tracker data is not sent to Gold with Elleanor or Public Gold.</p>
+        <p class="note">Guest progress is saved only on this device. Signed-in users can sync the same tracker data securely to their account.</p>
       </section>
     </section>
 
@@ -362,7 +420,7 @@
         <div class="credentials">
           <div class="cred"><div class="big">Since 2022</div><div class="small">Public Gold dealer and active gold saver</div></div>
           <div class="cred"><div class="big">65+ Savers</div><div class="small">Gold savers guided under her community</div></div>
-          <div class="cred"><div class="big">228g+</div><div class="small">Personal gold accumulation documented through consistent saving</div></div>
+          <div class="cred"><div class="big">229.6792g</div><div class="small">Personal gold accumulation documented through consistent saving</div></div>
           <div class="cred"><div class="big">Speaker</div><div class="small">Testimonial speaker, Seminar Kaya Dengan Emas — May 2026</div></div>
         </div>
 
@@ -370,7 +428,7 @@
           <h3>My Gold Journey</h3>
           <p>My journey with Public Gold started as a saver. I was first introduced to gold saving in 2016, but at that time I associated gold mainly with jewellery and decided it was not for me.</p>
           <p>In 2022, I began looking at gold differently — as one of the ways I could preserve the value of my hard-earned money over the long term. I started small with 1g and continued learning, saving and accumulating consistently.</p>
-          <p>Over time, I converted part of my cash-saving challenges into gold and built my personal holdings to more than 228g. What began as a personal financial journey gradually became a platform for education and guidance.</p>
+          <p>Over time, I converted part of my cash-saving challenges into gold and built my personal holdings to 229.6792g. What began as a personal financial journey gradually became a platform for education and guidance.</p>
         </div>
 
         <div class="about-section">
@@ -407,12 +465,6 @@
         <div class="about-quote">
           Start small. Build consistently. Understand what you are saving.
         </div>
-
-        <div class="register-actions" style="margin-top:16px">
-          <a class="register-link primary-link" href="https://pg2u.my/app/link/elleanorkhairunisa/register" target="_blank" rel="noopener noreferrer">Register with Elleanor</a>
-          <a class="register-link whatsapp-link" href="https://wa.me/6738297497?text=Assalamualaikum%20Elleanor%2C%20I%27m%20interested%20to%20know%20more%20about%20saving%20gold%20with%20Public%20Gold." target="_blank" rel="noopener noreferrer">WhatsApp for Guidance</a>
-        </div>
-
         <p class="note">Elleanor is a Public Gold dealer and gold educator. This website provides educational and indicative tools and is not independent financial advice.</p>
       </section>
     </section>
@@ -632,6 +684,7 @@ async function initAuth(){
     if(session?.user)closeAuthModal();
   });
 }
+
 
 document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');el(b.dataset.tab).classList.add('active');window.scrollTo({top:document.querySelector('.tabs').offsetTop-8,behavior:'smooth'})}));
 document.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>{el('budgetRM').value=b.dataset.amount;calculateBudget()}));
