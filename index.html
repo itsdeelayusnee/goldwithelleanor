@@ -144,6 +144,18 @@
     .tng-card .detail{margin-top:5px;color:var(--muted);font-size:10.5px;line-height:1.45}
     @media(max-width:430px){.tng-options{grid-template-columns:1fr}}
 
+  
+    .about-profile{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center;margin-bottom:16px}
+    .about-photo{width:150px;aspect-ratio:4/5;object-fit:cover;border-radius:18px;border:1px solid var(--line);box-shadow:0 12px 30px rgba(91,67,27,.14);background:var(--soft)}
+    .about-profile-copy h2{margin:0;font-family:Georgia,serif;font-size:25px;font-weight:500}
+    .about-profile-copy .title{margin-top:5px;font-size:12px;font-weight:850;color:var(--gold-dark);letter-spacing:.03em}
+    .about-profile-copy p{margin:8px 0 0;color:var(--muted);font-size:12.5px;line-height:1.6}
+    @media(max-width:430px){
+      .about-profile{grid-template-columns:1fr;text-align:center}
+      .about-photo{width:min(210px,70vw);margin:0 auto}
+      .about-profile-copy p{max-width:360px;margin-left:auto;margin-right:auto}
+    }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -467,8 +479,14 @@
     <section class="panel" id="aboutPanel">
       <section class="card">
         <div class="about-hero">
-          <h2>About Elleanor</h2>
-          <p><strong>Elleanor Khairunisa</strong> is a Public Gold dealer and gold educator based in Brunei, focused on helping individuals understand gold saving in a simple, practical and transparent way.</p>
+          <div class="about-profile">
+            <img class="about-photo" src="elleanor-profile.jpg" alt="Elleanor Khairunisa, Public Gold Dealer and Gold Educator" />
+            <div class="about-profile-copy">
+              <h2>Elleanor Khairunisa</h2>
+              <div class="title">Public Gold Dealer | Gold Educator</div>
+              <p>Based in Brunei, I help new, existing and returning gold savers understand gold saving through practical education, simple tools and guidance built from my own experience as a saver.</p>
+            </div>
+          </div>
         </div>
 
         <div class="credentials">

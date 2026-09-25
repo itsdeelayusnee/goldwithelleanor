@@ -39,3 +39,5 @@ This build unregisters the previous service worker and clears old browser caches
 - Zakat section now clearly attributes B$158.39/g and 85g nisab to the current KHEU / Majlis Ugama Islam Brunei reference shown on the official calculator.
 
 - TNG calculator now shows two separate fee methods: 2.6% manual TNG top-up then transfer to Public Gold, and 3.0% direct top-up from the Public Gold app.
+
+- Added Elleanor's professional portrait to the About section with dealer/educator positioning.
