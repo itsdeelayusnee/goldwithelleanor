@@ -19,3 +19,5 @@ Uses Supabase email magic-link authentication and the `gold_tracker` table prote
 
 ## Cache note
 This build unregisters the previous service worker and clears old browser caches so new Vercel deployments load immediately.
+
+- Annual Gold Saving Projection for 1, 3, 5 and 10 years based on the current gold price and monthly saving amount.

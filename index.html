@@ -87,6 +87,18 @@
     .sync-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 9px;border-radius:999px;border:1px solid var(--line);font-size:10.5px;font-weight:800;color:var(--muted);background:var(--card)}
     .sync-badge.cloud{color:var(--ok)}.sync-badge.local{color:var(--gold-dark)}
 
+  
+    .projection-card{margin-top:16px;border:1px solid var(--line);border-radius:18px;padding:16px;background:linear-gradient(135deg,var(--soft),var(--card))}
+    .projection-head h3{margin:0;font-family:Georgia,serif;font-size:20px;font-weight:500}
+    .projection-head p{margin:5px 0 0;color:var(--muted);font-size:11.5px;line-height:1.5}
+    .projection-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}
+    .projection-item{border:1px solid var(--line);border-radius:14px;padding:12px 9px;background:var(--card);text-align:center}
+    .projection-item .yr{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+    .projection-item .grams{margin-top:5px;font-size:18px;font-weight:850;color:var(--gold-dark)}
+    .projection-item .value{margin-top:3px;font-size:10.5px;color:var(--muted)}
+    .projection-note{margin-top:10px;color:var(--muted);font-size:10.5px;line-height:1.5}
+    @media(max-width:430px){.projection-grid{grid-template-columns:1fr 1fr}}
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -257,6 +269,21 @@
           <div class="input-affix"><input id="monthlySaving" type="number" min="0" step="1" inputmode="decimal" placeholder="e.g. 100" /><span class="suffix">RM</span></div>
         </div>
 
+
+        <div class="projection-card">
+          <div class="projection-head">
+            <h3>Annual Gold Saving Projection</h3>
+            <p>Estimated grams if you keep saving the same amount every month at today’s Public Gold price.</p>
+          </div>
+          <div class="projection-grid">
+            <div class="projection-item"><div class="yr">1 Year</div><div class="grams" id="proj1y">0.0000g</div><div class="value" id="proj1yValue">RM0.00</div></div>
+            <div class="projection-item"><div class="yr">3 Years</div><div class="grams" id="proj3y">0.0000g</div><div class="value" id="proj3yValue">RM0.00</div></div>
+            <div class="projection-item"><div class="yr">5 Years</div><div class="grams" id="proj5y">0.0000g</div><div class="value" id="proj5yValue">RM0.00</div></div>
+            <div class="projection-item"><div class="yr">10 Years</div><div class="grams" id="proj10y">0.0000g</div><div class="value" id="proj10yValue">RM0.00</div></div>
+          </div>
+          <div class="projection-note">Projection assumes today’s gold price stays unchanged. Actual grams accumulated will vary as Public Gold prices change over time.</div>
+        </div>
+
         <div class="progress-card">
           <div class="progress-top"><div class="progress-title">Goal progress</div><div class="progress-percent" id="progressPercent">0%</div></div>
           <div class="bar"><div class="bar-fill" id="barFill"></div></div>
@@ -419,6 +446,20 @@ function updateTracker(){
   el('currentValueMYR').textContent=money(currentM,'MYR');el('currentValueBND').textContent=`≈ ${money(currentB,'BND')}`;el('remainingGrams').textContent=`${remaining.toFixed(4)}g`;el('remainingValue').textContent=`${money(remainingM,'MYR')} remaining`;
   el('monthlyGrams').textContent=`${monthlyG.toFixed(4)}g`;el('monthlyBnd').textContent=`${money(monthly,'MYR')} ≈ ${money(monthly*state.rate,'BND')}`;el('monthsToTarget').textContent=remaining<=0&&target>0?'Target reached':months>0?`≈ ${months} month${months===1?'':'s'}`:'—';
   el('targetValueMYR').textContent=money(targetM,'MYR');el('targetValueBND').textContent=`≈ ${money(targetB,'BND')}`;
+
+  const monthlyGold = state.myr>0 ? monthly/state.myr : 0;
+  [
+    [1,'proj1y','proj1yValue'],
+    [3,'proj3y','proj3yValue'],
+    [5,'proj5y','proj5yValue'],
+    [10,'proj10y','proj10yValue']
+  ].forEach(([years,gramsId,valueId])=>{
+    const months=years*12;
+    const gramsProjected=monthlyGold*months;
+    const rmSaved=monthly*months;
+    el(gramsId).textContent=`${gramsProjected.toFixed(4)}g`;
+    el(valueId).textContent=`RM${rmSaved.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  });
 }
 async function saveTracker(){
   const values={current_grams:Math.max(0,Number(el('currentGrams').value)||0),target_grams:Math.max(0,Number(el('targetGrams').value)||0),monthly_saving:Math.max(0,Number(el('monthlySaving').value)||0),updated_at:new Date().toISOString()};
