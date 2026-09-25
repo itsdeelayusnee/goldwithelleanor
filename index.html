@@ -136,6 +136,14 @@
     .zakat-reminder-status.ok strong{color:var(--ok)}
     @media(max-width:430px){.zakat-reminder-grid{grid-template-columns:1fr}}
 
+  
+    .tng-options{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
+    .tng-card{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card)}
+    .tng-card .method{font-size:11px;font-weight:850;color:var(--ink)}
+    .tng-card .fee{margin-top:3px;font-size:18px;font-weight:850;color:var(--gold-dark)}
+    .tng-card .detail{margin-top:5px;color:var(--muted);font-size:10.5px;line-height:1.45}
+    @media(max-width:430px){.tng-options{grid-template-columns:1fr}}
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -201,7 +209,8 @@
           </div>
           <div class="starter-bnd">
             Approx. <strong id="rm100Bnd">B$—</strong> based on the current MYR → BND rate.<br>
-            <span id="rm100TngFee">TNG top-up fee (2.6%): RM2.60 • Total RM102.60</span>
+            <span id="rm100TngManual">Manual TNG top-up (2.6%): RM2.60 • Total RM102.60</span><br>
+            <span id="rm100TngDirect">Direct top-up in Public Gold app (3.0%): RM3.00 • Total RM103.00</span>
           </div>
         </div>
 
@@ -223,11 +232,19 @@
             <input id="budgetRM" type="number" min="0" step="1" inputmode="decimal" placeholder="Enter amount in RM" />
             <button class="primary" id="budgetCalc">Calculate</button>
           </div>
-          <label class="check-row">
-            <input id="includeTngFee" type="checkbox" checked />
-            <span>Include TNG top-up fee of 2.6% in the total amount to pay.</span>
-          </label>
           <div class="amount-result" id="budgetResult">Enter an amount to see the estimated grams.</div>
+          <div class="tng-options">
+            <div class="tng-card">
+              <div class="method">Manual top-up from TNG → transfer to Public Gold</div>
+              <div class="fee">2.6% fee</div>
+              <div class="detail" id="manualTngResult">Enter an amount above to calculate the total.</div>
+            </div>
+            <div class="tng-card">
+              <div class="method">Direct top-up from the Public Gold app</div>
+              <div class="fee">3.0% fee</div>
+              <div class="detail" id="directTngResult">Enter an amount above to calculate the total.</div>
+            </div>
+          </div>
         </div>
 
         <div class="calc-box">
@@ -518,7 +535,7 @@
     </section>
 
     <footer>
-      Educational and indicative calculations only. Public Gold prices may change during the day; BND conversion rates may differ by bank, TNG, remittance or payment provider. Physical product prices may exclude Gold Premium. Where TNG top-up is selected, a 2.6% top-up fee is added for estimation. Gold with Elleanor is a Public Gold dealer page and does not provide independent financial advice.
+      Educational and indicative calculations only. Public Gold prices may change during the day; BND conversion rates may differ by bank, TNG, remittance or payment provider. Physical product prices may exclude Gold Premium. TNG fee estimates are shown separately: 2.6% for manual top-up from TNG followed by transfer to Public Gold, and 3.0% for direct top-up from the Public Gold app. Gold with Elleanor is a Public Gold dealer page and does not provide independent financial advice.
     </footer>
   </main>
 
@@ -564,7 +581,8 @@ function renderPrice(data,isLive){
   state.products=data.products||state.products;
   el('myrPrice').textContent=state.myr.toFixed(0);el('bndPrice').textContent=state.bnd.toFixed(2);el('rm100Grams').textContent=(100/state.myr).toFixed(4);
   el('rm100Bnd').textContent=`B$${(100*state.rate).toFixed(2)}`;
-  el('rm100TngFee').textContent=`TNG top-up fee (2.6%): RM2.60 • Total RM102.60 ≈ B$${(102.60*state.rate).toFixed(2)}`;
+  el('rm100TngManual').textContent=`Manual TNG top-up (2.6%): RM2.60 • Total RM102.60 ≈ B$${(102.60*state.rate).toFixed(2)}`;
+  el('rm100TngDirect').textContent=`Direct top-up in Public Gold app (3.0%): RM3.00 • Total RM103.00 ≈ B$${(103.00*state.rate).toFixed(2)}`;
   el('fxRate').textContent=`RM1 = B$${state.rate.toFixed(4)}`;el('publicGoldUpdated').textContent=data.publicGoldUpdatedAt||'—';
   el('liveStatus').innerHTML=`<span class="dot"></span> ${isLive?'LIVE FROM PUBLIC GOLD':'FALLBACK PRICE'}`;el('liveStatus').style.color=isLive?'var(--ok)':'var(--danger)';
   el('productStatus').innerHTML=`<span class="dot"></span> ${isLive?'LIVE FROM PUBLIC GOLD':'UNAVAILABLE'}`;el('productStatus').style.color=isLive?'var(--ok)':'var(--danger)';el('productUpdated').textContent=data.publicGoldUpdatedAt||'—';
@@ -586,19 +604,38 @@ async function loadPrice(){
 
 function calculateBudget(){
   const amount=Math.max(0,Number(el('budgetRM').value)||0);
-  if(!amount){el('budgetResult').textContent='Enter an amount to see the estimated grams.';return}
+
+  if(!amount){
+    el('budgetResult').textContent='Enter an amount to see the estimated grams.';
+    el('manualTngResult').textContent='Enter an amount above to calculate the total.';
+    el('directTngResult').textContent='Enter an amount above to calculate the total.';
+    return;
+  }
+
   const grams=amount/state.myr;
-  const includeFee=el('includeTngFee')?.checked;
-  const fee=includeFee?amount*0.026:0;
-  const total=amount+fee;
-  const bnd=amount*state.rate;
-  const totalBnd=total*state.rate;
+  const goldBnd=amount*state.rate;
+
+  const manualFee=amount*0.026;
+  const manualTotal=amount+manualFee;
+  const manualTotalBnd=manualTotal*state.rate;
+
+  const directFee=amount*0.03;
+  const directTotal=amount+directFee;
+  const directTotalBnd=directTotal*state.rate;
+
   el('budgetResult').innerHTML=
     `<strong>${grams.toFixed(4)}g</strong><br>`+
-    `<span class="caption">Gold purchase: RM${amount.toFixed(2)} ≈ B$${bnd.toFixed(2)}</span><br>`+
-    (includeFee
-      ? `<span class="caption">TNG fee 2.6%: RM${fee.toFixed(2)} • Total top-up: <strong>RM${total.toFixed(2)}</strong> ≈ <strong>B$${totalBnd.toFixed(2)}</strong></span>`
-      : `<span class="caption">TNG fee not included.</span>`);
+    `<span class="caption">Gold purchase: RM${amount.toFixed(2)} ≈ B$${goldBnd.toFixed(2)}. The fee does not increase the grams purchased.</span>`;
+
+  el('manualTngResult').innerHTML=
+    `Fee: <strong>RM${manualFee.toFixed(2)}</strong><br>`+
+    `Total top-up: <strong>RM${manualTotal.toFixed(2)}</strong><br>`+
+    `≈ <strong>B$${manualTotalBnd.toFixed(2)}</strong>`;
+
+  el('directTngResult').innerHTML=
+    `Fee: <strong>RM${directFee.toFixed(2)}</strong><br>`+
+    `Total top-up: <strong>RM${directTotal.toFixed(2)}</strong><br>`+
+    `≈ <strong>B$${directTotalBnd.toFixed(2)}</strong>`;
 }
 function calculate(){
   const grams=Number(el('grams').value);if(!Number.isFinite(grams)||grams<=0){el('calcResult').textContent='Enter a valid number of grams.';return}
@@ -790,7 +827,7 @@ async function initAuth(){
 
 document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');el(b.dataset.tab).classList.add('active');window.scrollTo({top:document.querySelector('.tabs').offsetTop-8,behavior:'smooth'})}));
 document.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>{el('budgetRM').value=b.dataset.amount;calculateBudget()}));
-el('budgetCalc').addEventListener('click',calculateBudget);el('budgetRM').addEventListener('input',calculateBudget);el('includeTngFee').addEventListener('change',calculateBudget);el('calculate').addEventListener('click',calculate);el('grams').addEventListener('keydown',e=>{if(e.key==='Enter')calculate()});
+el('budgetCalc').addEventListener('click',calculateBudget);el('budgetRM').addEventListener('input',calculateBudget);el('calculate').addEventListener('click',calculate);el('grams').addEventListener('keydown',e=>{if(e.key==='Enter')calculate()});
 ['currentGrams','targetGrams','monthlySaving'].forEach(i=>el(i).addEventListener('input',updateTracker));
 el('nisabReachedDate').addEventListener('change',()=>{updateZakatReminder();});
 el('zakatReminderEnabled').addEventListener('change',()=>{updateZakatReminder();});el('saveTracker').addEventListener('click',saveTracker);el('resetTracker').addEventListener('click',resetTracker);
