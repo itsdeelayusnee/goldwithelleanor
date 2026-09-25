@@ -13,3 +13,6 @@ Mobile-first Public Gold companion site with:
 Deploy to Vercel from GitHub. Keep `api/gold-price.js` inside the `api` folder.
 
 - optional TNG top-up fee calculation at 2.6%
+
+## Cloud tracker login
+Uses Supabase email magic-link authentication and the `gold_tracker` table protected by Row Level Security. Guests continue to use browser local storage.

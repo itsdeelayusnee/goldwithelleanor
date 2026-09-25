@@ -72,7 +72,20 @@
     .floating-wa{position:fixed;right:16px;bottom:18px;z-index:50;background:#25D366;color:#fff;text-decoration:none;border-radius:999px;padding:13px 16px;font-weight:900;font-size:12px;box-shadow:0 12px 34px rgba(0,0,0,.22)}
     footer{text-align:center;margin:18px 0 0;color:var(--muted);font-size:10.5px;line-height:1.55}
     @media(max-width:430px){body{padding:14px 10px 88px}.card{padding:17px}.tabs{gap:4px}.tab-btn{font-size:10.5px;padding:7px 3px}.field-grid,.tracker-stats,.register-actions{grid-template-columns:1fr}.full-link,.wide{grid-column:auto}.preset-row{grid-template-columns:1fr 1fr}.starter-top{align-items:flex-start}.starter-grams .big{font-size:22px}.price-table{font-size:11px}}
+  
+    .authbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:15px;background:var(--card)}
+    .authstate{min-width:0}.authstate strong{display:block;font-size:12px}.authstate span{display:block;margin-top:2px;color:var(--muted);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+    .authactions{display:flex;gap:7px;flex:0 0 auto}.authactions button{min-height:36px;border-radius:10px;padding:0 11px;font-size:11px;font-weight:850;cursor:pointer}
+    .auth-primary{border:0;color:#fff;background:linear-gradient(135deg,#bd9138,#8f681e)}.auth-secondary{border:1px solid var(--line);color:var(--ink);background:var(--card)}
+    .modal-backdrop{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.48);display:none;align-items:center;justify-content:center;padding:18px}
+    .modal-backdrop.show{display:flex}.auth-modal{width:min(430px,100%);background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 30px 80px rgba(0,0,0,.32)}
+    .auth-modal h3{margin:0;font-family:Georgia,serif;font-size:23px;font-weight:500}.auth-modal p{margin:7px 0 14px;color:var(--muted);font-size:12px;line-height:1.55}
+    .auth-modal .row{display:grid;grid-template-columns:1fr auto;gap:8px}.auth-message{min-height:20px;margin-top:10px;font-size:11.5px;color:var(--muted)}
+    .sync-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 9px;border-radius:999px;border:1px solid var(--line);font-size:10.5px;font-weight:800;color:var(--muted);background:var(--card)}
+    .sync-badge.cloud{color:var(--ok)}.sync-badge.local{color:var(--gold-dark)}
+
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <main class="app">
@@ -86,6 +99,17 @@
       <h1>Gold with Elleanor</h1>
       <p>Learn, calculate, track and start saving gold — with Public Gold prices converted for Brunei.</p>
     </header>
+    <section class="authbar">
+      <div class="authstate">
+        <strong id="authTitle">Guest mode</strong>
+        <span id="authSubtitle">Tracker progress is saved on this device only.</span>
+      </div>
+      <div class="authactions">
+        <button class="auth-primary" id="signInBtn">Sign In</button>
+        <button class="auth-secondary" id="signOutBtn" hidden>Sign Out</button>
+      </div>
+    </section>
+
 
     <section class="intro">
       <strong>Small steps, bigger future.</strong>
@@ -212,7 +236,8 @@
     <section class="panel" id="trackerPanel">
       <section class="card">
         <h2 class="section-title">Gold Saving Tracker</h2>
-        <p class="section-copy">Set your goal, see your estimated value and keep your progress saved on this device.</p>
+        <p class="section-copy">Set your goal, see your estimated value and keep your progress saved on this device or sync it securely when signed in.</p>
+        <div class="sync-badge local" id="syncBadge">📱 Saved on this device only</div>
 
         <div class="field-grid" style="margin-top:18px">
           <div class="field">
@@ -296,6 +321,20 @@
     </footer>
   </main>
 
+
+  <div class="modal-backdrop" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authHeading">
+    <div class="auth-modal">
+      <h3 id="authHeading">Sign in to save your progress</h3>
+      <p>Enter your email address. Supabase will send you a secure login link. You can still use all calculators without signing in.</p>
+      <div class="row">
+        <input id="authEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" />
+        <button class="primary" id="sendLoginLink">Send Link</button>
+      </div>
+      <div class="auth-message" id="authMessage"></div>
+      <button class="secondary" id="continueGuest" style="width:100%;margin-top:10px">Continue as Guest</button>
+    </div>
+  </div>
+
   <a class="floating-wa" href="https://wa.me/6738297497?text=Assalamualaikum%20Elleanor%2C%20I%27m%20interested%20to%20know%20more%20about%20saving%20gold%20with%20Public%20Gold." target="_blank" rel="noopener noreferrer">WhatsApp</a>
 
 <script>
@@ -303,6 +342,11 @@ const FALLBACK={myr:606,rate:0.314};
 const state={myr:FALLBACK.myr,rate:FALLBACK.rate,bnd:FALLBACK.myr*FALLBACK.rate,isLive:false,products:{smallBars:[],goldBars:[],dinars:[]}};
 const el=id=>document.getElementById(id);
 const storageKey='goldWithElleanorTrackerV2';
+const SUPABASE_URL='https://eplqerngcsctgphokxcg.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gjdLzdJCW-NFbBx3tX5KDg_duA4hflX';
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+let currentUser=null;
+
 
 function money(v,c){v=Number.isFinite(v)?v:0;return c==='BND'?`B$${v.toFixed(2)}`:`RM${v.toFixed(2)}`}
 function formatTime(s){const d=s?new Date(s):new Date();return new Intl.DateTimeFormat('en-BN',{timeZone:'Asia/Brunei',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(d)}
@@ -373,9 +417,44 @@ function updateTracker(){
   el('monthlyGrams').textContent=`${monthlyG.toFixed(4)}g`;el('monthlyBnd').textContent=`${money(monthly,'MYR')} ≈ ${money(monthly*state.rate,'BND')}`;el('monthsToTarget').textContent=remaining<=0&&target>0?'Target reached':months>0?`≈ ${months} month${months===1?'':'s'}`:'—';
   el('targetValueMYR').textContent=money(targetM,'MYR');el('targetValueBND').textContent=`≈ ${money(targetB,'BND')}`;
 }
-function saveTracker(){localStorage.setItem(storageKey,JSON.stringify({currentGrams:el('currentGrams').value,targetGrams:el('targetGrams').value,monthlySaving:el('monthlySaving').value}));el('savedMsg').textContent='Progress saved on this device ✓';setTimeout(()=>el('savedMsg').textContent='',2200)}
-function loadTracker(){try{const s=JSON.parse(localStorage.getItem(storageKey)||'null');if(s){el('currentGrams').value=s.currentGrams||'';el('targetGrams').value=s.targetGrams||'';el('monthlySaving').value=s.monthlySaving||''}}catch(_){}updateTracker()}
-function resetTracker(){['currentGrams','targetGrams','monthlySaving'].forEach(i=>el(i).value='');localStorage.removeItem(storageKey);updateTracker();el('savedMsg').textContent='Tracker reset.';setTimeout(()=>el('savedMsg').textContent='',1600)}
+async function saveTracker(){
+  const values={current_grams:Math.max(0,Number(el('currentGrams').value)||0),target_grams:Math.max(0,Number(el('targetGrams').value)||0),monthly_saving:Math.max(0,Number(el('monthlySaving').value)||0),updated_at:new Date().toISOString()};
+  if(currentUser){
+    const {error}=await supabaseClient.from('gold_tracker').upsert({user_id:currentUser.id,...values},{onConflict:'user_id'});
+    if(error){el('savedMsg').textContent='Could not sync right now. Please try again.';console.error(error);return}
+    el('savedMsg').textContent='Progress synced to your account ✓';
+  }else{
+    localStorage.setItem(storageKey,JSON.stringify({currentGrams:el('currentGrams').value,targetGrams:el('targetGrams').value,monthlySaving:el('monthlySaving').value}));
+    el('savedMsg').textContent='Progress saved on this device ✓';
+  }
+  setTimeout(()=>el('savedMsg').textContent='',2400);
+}
+async function loadTracker(){
+  if(currentUser){
+    const {data,error}=await supabaseClient.from('gold_tracker').select('current_grams,target_grams,monthly_saving').eq('user_id',currentUser.id).maybeSingle();
+    if(!error&&data){
+      el('currentGrams').value=data.current_grams??'';
+      el('targetGrams').value=data.target_grams??'';
+      el('monthlySaving').value=data.monthly_saving??'';
+    }else if(error){console.error(error)}
+  }else{
+    try{
+      const s=JSON.parse(localStorage.getItem(storageKey)||'null');
+      if(s){el('currentGrams').value=s.currentGrams||'';el('targetGrams').value=s.targetGrams||'';el('monthlySaving').value=s.monthlySaving||''}
+    }catch(_){}
+  }
+  updateTracker();
+}
+async function resetTracker(){
+  ['currentGrams','targetGrams','monthlySaving'].forEach(i=>el(i).value='');
+  if(currentUser){
+    const {error}=await supabaseClient.from('gold_tracker').delete().eq('user_id',currentUser.id);
+    if(error)console.error(error);
+  }else{
+    localStorage.removeItem(storageKey);
+  }
+  updateTracker();el('savedMsg').textContent='Tracker reset.';setTimeout(()=>el('savedMsg').textContent='',1600);
+}
 
 function calculateZakat(){
   const grams=Math.max(0,Number(el('zakatGrams').value)||0),haul=el('haulComplete').checked,nisab=85,zakatGoldPriceBND=158.39,rate=.025;
@@ -383,6 +462,49 @@ function calculateZakat(){
   if(grams<nisab){el('zakatBnd').textContent='B$0.00';el('zakatMyr').textContent='RM0.00 equivalent';el('zakatGold').textContent='0.0000g equivalent';el('zakatStatus').textContent=`Below the 85g nisab reference (${grams.toFixed(4)}g entered).`;return}
   if(!haul){el('zakatBnd').textContent='B$0.00';el('zakatMyr').textContent='RM0.00 equivalent';el('zakatGold').textContent='0.0000g equivalent';el('zakatStatus').textContent='Nisab is reached, but haul is not marked as complete.';return}
   const zg=grams*rate,zb=grams*zakatGoldPriceBND*rate,zm=state.rate>0?zb/state.rate:0;el('zakatBnd').textContent=`B$${zb.toFixed(2)}`;el('zakatMyr').textContent=`RM${zm.toFixed(2)} equivalent`;el('zakatGold').textContent=`${zg.toFixed(4)}g equivalent`;el('zakatStatus').textContent='Calculated at 2.5% using B$158.39/g.'
+}
+
+
+function setAuthUI(user){
+  currentUser=user||null;
+  if(currentUser){
+    el('authTitle').textContent='My Progress';
+    el('authSubtitle').textContent=currentUser.email||'Signed in';
+    el('signInBtn').hidden=true;
+    el('signOutBtn').hidden=false;
+    el('syncBadge').textContent='☁ Synced securely to your account';
+    el('syncBadge').classList.remove('local');el('syncBadge').classList.add('cloud');
+  }else{
+    el('authTitle').textContent='Guest mode';
+    el('authSubtitle').textContent='Tracker progress is saved on this device only.';
+    el('signInBtn').hidden=false;
+    el('signOutBtn').hidden=true;
+    el('syncBadge').textContent='📱 Saved on this device only';
+    el('syncBadge').classList.remove('cloud');el('syncBadge').classList.add('local');
+  }
+}
+function openAuthModal(){el('authModal').classList.add('show');el('authEmail').focus()}
+function closeAuthModal(){el('authModal').classList.remove('show')}
+async function sendMagicLink(){
+  const email=el('authEmail').value.trim();
+  if(!email){el('authMessage').textContent='Please enter your email address.';return}
+  el('authMessage').textContent='Sending secure login link…';
+  const {error}=await supabaseClient.auth.signInWithOtp({
+    email,
+    options:{emailRedirectTo:'https://goldwithelleanor.vercel.app'}
+  });
+  if(error){el('authMessage').textContent=error.message;return}
+  el('authMessage').textContent='Check your email for the secure login link. You can close this window after opening the link.';
+}
+async function initAuth(){
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  setAuthUI(session?.user||null);
+  await loadTracker();
+  supabaseClient.auth.onAuthStateChange(async(_event,session)=>{
+    setAuthUI(session?.user||null);
+    await loadTracker();
+    if(session?.user)closeAuthModal();
+  });
 }
 
 document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');el(b.dataset.tab).classList.add('active');window.scrollTo({top:document.querySelector('.tabs').offsetTop-8,behavior:'smooth'})}));
@@ -401,7 +523,15 @@ let deferredPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.prev
 el('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;el('installBtn').hidden=true});
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 
-loadTracker();loadPrice();setInterval(loadPrice,5*60*1000);
+
+el('signInBtn').addEventListener('click',openAuthModal);
+el('continueGuest').addEventListener('click',closeAuthModal);
+el('authModal').addEventListener('click',e=>{if(e.target===el('authModal'))closeAuthModal()});
+el('sendLoginLink').addEventListener('click',sendMagicLink);
+el('authEmail').addEventListener('keydown',e=>{if(e.key==='Enter')sendMagicLink()});
+el('signOutBtn').addEventListener('click',async()=>{await supabaseClient.auth.signOut();setAuthUI(null);await loadTracker()});
+
+initAuth();loadPrice();setInterval(loadPrice,5*60*1000);
 </script>
 </body>
 </html>

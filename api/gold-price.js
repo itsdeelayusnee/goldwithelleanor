@@ -88,11 +88,28 @@ module.exports = async function handler(req, res) {
       throw new Error('Public Gold GAP price was not a valid number.');
     }
 
-    const updatedMatch =
-      text.match(/Last\s+Update\s+(\d{1,2}-[A-Za-z]{3,9}-\d{4}\s+\d{1,2}:\d{2}:\d{2})/i) ||
-      gapSec.match(/Last\s+updated\s+(\d{1,2}-[A-Za-z]{3,9}-\d{4})/i);
+    // Prefer the update date inside the GAP section itself.
+    // Public Gold's page contains older repeated "Last Update" timestamps elsewhere,
+    // which can otherwise cause a stale 2021 date to be displayed.
+    const gapUpdatedMatch =
+      gapSec.match(/Last\s+updated\s+(\d{1,2}-[A-Za-z]{3,9}-\d{4}(?:\s+\d{1,2}:\d{2}:\d{2})?)/i);
 
-    const publicGoldUpdatedAt = updatedMatch ? updatedMatch[1] : null;
+    let publicGoldUpdatedAt = gapUpdatedMatch ? gapUpdatedMatch[1] : null;
+
+    // Fallback: collect every page-level Last Update timestamp and choose the newest.
+    if (!publicGoldUpdatedAt) {
+      const matches = [...text.matchAll(/Last\s+Update\s+(\d{1,2}-[A-Za-z]{3,9}-\d{4}(?:\s+\d{1,2}:\d{2}:\d{2})?)/gi)]
+        .map(m => m[1]);
+
+      if (matches.length) {
+        const parsed = matches
+          .map(v => ({ raw: v, time: Date.parse(v.replace(/-/g, ' ')) }))
+          .filter(x => Number.isFinite(x.time))
+          .sort((a, b) => b.time - a.time);
+
+        publicGoldUpdatedAt = parsed.length ? parsed[0].raw : matches[matches.length - 1];
+      }
+    }
 
     // Physical products are optional. Failure to parse them must NOT break the GAP price.
     const barSec = section(text, 'GOLD BAR (24K)', 'GOLD WAFER - DINAR');
