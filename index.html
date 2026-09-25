@@ -34,7 +34,7 @@
     .brand h1{font-family:Georgia,serif;font-size:26px;font-weight:500;margin:0}.brand p{margin:5px auto 0;color:var(--muted);font-size:12px;line-height:1.5;max-width:430px}
     .intro{background:linear-gradient(135deg,var(--soft),var(--card));border:1px solid var(--line);border-radius:20px;padding:16px 18px;margin:14px 0}
     .intro strong{font-family:Georgia,serif;font-size:19px;font-weight:500}.intro p{margin:6px 0 0;color:var(--muted);font-size:12.5px;line-height:1.55}
-    .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:color-mix(in srgb,var(--card) 82%,transparent);border:1px solid var(--line);border-radius:17px;padding:6px;margin-bottom:14px;position:sticky;top:8px;z-index:20;backdrop-filter:blur(12px)}
+    .tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;background:color-mix(in srgb,var(--card) 82%,transparent);border:1px solid var(--line);border-radius:17px;padding:6px;margin-bottom:14px;position:sticky;top:8px;z-index:20;backdrop-filter:blur(12px)}
     .tab-btn{border:0;border-radius:12px;min-height:44px;padding:8px 6px;font-size:11.5px;font-weight:850;cursor:pointer;color:var(--muted);background:transparent}
     .tab-btn.active{color:#fff;background:linear-gradient(135deg,#bd9138,#8f681e)}
     .panel{display:none}.panel.active{display:block}
@@ -99,6 +99,21 @@
     .projection-note{margin-top:10px;color:var(--muted);font-size:10.5px;line-height:1.5}
     @media(max-width:430px){.projection-grid{grid-template-columns:1fr 1fr}}
 
+  
+    .about-hero{background:linear-gradient(135deg,var(--soft),var(--card));border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px}
+    .about-hero h2{margin:0;font-family:Georgia,serif;font-size:25px;font-weight:500}
+    .about-hero p{margin:8px 0 0;color:var(--muted);font-size:12.5px;line-height:1.65}
+    .credentials{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+    .cred{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card)}
+    .cred .big{font-size:18px;font-weight:850;color:var(--gold-dark)}
+    .cred .small{margin-top:3px;font-size:10.5px;color:var(--muted);line-height:1.4}
+    .about-section{margin-top:16px}
+    .about-section h3{margin:0;font-family:Georgia,serif;font-size:20px;font-weight:500}
+    .about-section p{margin:7px 0 0;color:var(--muted);font-size:12.5px;line-height:1.65}
+    .about-list{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:12px;line-height:1.7}
+    .about-quote{margin-top:16px;border-left:3px solid var(--gold);padding:10px 0 10px 14px;color:var(--ink);font-family:Georgia,serif;font-size:17px;line-height:1.5}
+    @media(max-width:430px){.credentials{grid-template-columns:1fr}.tabs{grid-template-columns:repeat(3,1fr)}}
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -136,6 +151,7 @@
       <button class="tab-btn" data-tab="productsPanel">Gold Prices</button>
       <button class="tab-btn" data-tab="trackerPanel">Tracker</button>
       <button class="tab-btn" data-tab="zakatPanel">Zakat</button>
+      <button class="tab-btn" data-tab="aboutPanel">About</button>
     </nav>
 
     <section class="panel active" id="pricePanel">
@@ -332,6 +348,72 @@
         <button class="primary" id="calculateZakat" style="width:100%;margin-top:13px">Calculate Zakat</button>
         <p class="note">Indicative only. Confirm the latest official zakat gold price, nisab, haul and applicable conditions with KHEU / Majlis Ugama Islam Brunei.</p>
         <a class="official-link" href="https://www.mora.gov.bn/SitePages/ZakatEmas.aspx" target="_blank" rel="noopener noreferrer">Open official Brunei Gold Zakat page ↗</a>
+      </section>
+    </section>
+
+
+    <section class="panel" id="aboutPanel">
+      <section class="card">
+        <div class="about-hero">
+          <h2>About Elleanor</h2>
+          <p><strong>Elleanor Khairunisa</strong> is a Public Gold dealer and gold educator based in Brunei, focused on helping individuals understand gold saving in a simple, practical and transparent way.</p>
+        </div>
+
+        <div class="credentials">
+          <div class="cred"><div class="big">Since 2022</div><div class="small">Public Gold dealer and active gold saver</div></div>
+          <div class="cred"><div class="big">65+ Savers</div><div class="small">Gold savers guided under her community</div></div>
+          <div class="cred"><div class="big">228g+</div><div class="small">Personal gold accumulation documented through consistent saving</div></div>
+          <div class="cred"><div class="big">Speaker</div><div class="small">Testimonial speaker, Seminar Kaya Dengan Emas — May 2026</div></div>
+        </div>
+
+        <div class="about-section">
+          <h3>My Gold Journey</h3>
+          <p>My journey with Public Gold started as a saver. I was first introduced to gold saving in 2016, but at that time I associated gold mainly with jewellery and decided it was not for me.</p>
+          <p>In 2022, I began looking at gold differently — as one of the ways I could preserve the value of my hard-earned money over the long term. I started small with 1g and continued learning, saving and accumulating consistently.</p>
+          <p>Over time, I converted part of my cash-saving challenges into gold and built my personal holdings to more than 228g. What began as a personal financial journey gradually became a platform for education and guidance.</p>
+        </div>
+
+        <div class="about-section">
+          <h3>Why I Built Gold with Elleanor</h3>
+          <p>Gold saving can feel complicated at the beginning, especially when dealing with changing prices, different currencies, product sizes, fees, targets and zakat.</p>
+          <p>I built this website to bring the tools my gold savers frequently need into one place — so they can learn, calculate and track their progress more easily.</p>
+          <ul class="about-list">
+            <li>Check Public Gold prices and estimated BND values</li>
+            <li>Estimate how many grams a selected budget may purchase</li>
+            <li>Track gold accumulation and saving targets</li>
+            <li>View annual gold-saving projections</li>
+            <li>Estimate Brunei gold zakat</li>
+            <li>Access registration and first-purchase guidance</li>
+          </ul>
+        </div>
+
+        <div class="about-section">
+          <h3>Dealer Approach</h3>
+          <p>My approach is education first, not pressure. I share what I have learned from my own gold-saving journey and guide new, existing and returning savers through the practical steps of understanding Public Gold, GAP and physical gold.</p>
+          <p>This page is designed to support informed decisions and consistent saving according to each person’s own financial ability.</p>
+        </div>
+
+        <div class="about-section">
+          <h3>Experience & Community</h3>
+          <ul class="about-list">
+            <li>Public Gold Dealer since 2022</li>
+            <li>Gold saver since 2022</li>
+            <li>65+ gold savers guided</li>
+            <li>Testimonial Speaker — Seminar Kaya Dengan Emas, 24 May 2026</li>
+            <li>Participant — G100 Master Dealer Conferences in Kuala Lumpur</li>
+          </ul>
+        </div>
+
+        <div class="about-quote">
+          Start small. Build consistently. Understand what you are saving.
+        </div>
+
+        <div class="register-actions" style="margin-top:16px">
+          <a class="register-link primary-link" href="https://pg2u.my/app/link/elleanorkhairunisa/register" target="_blank" rel="noopener noreferrer">Register with Elleanor</a>
+          <a class="register-link whatsapp-link" href="https://wa.me/6738297497?text=Assalamualaikum%20Elleanor%2C%20I%27m%20interested%20to%20know%20more%20about%20saving%20gold%20with%20Public%20Gold." target="_blank" rel="noopener noreferrer">WhatsApp for Guidance</a>
+        </div>
+
+        <p class="note">Elleanor is a Public Gold dealer and gold educator. This website provides educational and indicative tools and is not independent financial advice.</p>
       </section>
     </section>
 
