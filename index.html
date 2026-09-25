@@ -70,7 +70,7 @@
     .info-box{border:1px solid var(--line);border-radius:15px;padding:13px;margin-top:14px;background:var(--soft);font-size:11.5px;line-height:1.55;color:var(--muted)}.info-box strong{color:var(--ink)}
     .register-card{margin-top:16px;border:1px solid var(--line);border-radius:20px;padding:18px;background:var(--card);box-shadow:var(--shadow)}.register-card h3{margin:0;font-family:Georgia,serif;font-size:21px;font-weight:500}.register-card p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.55}
     .register-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}.register-link{display:flex;align-items:center;justify-content:center;text-align:center;min-height:47px;border-radius:13px;padding:9px 10px;font-size:12px;font-weight:850;text-decoration:none}.primary-link{color:#fff;background:linear-gradient(135deg,#bd9138,#8f681e)}.secondary-link{color:var(--ink);background:var(--card);border:1px solid var(--line)}.whatsapp-link{color:#fff;background:#25D366}.full-link{grid-column:1/-1}
-    .share-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.share-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;min-height:42px;font-weight:800;font-size:11.5px;cursor:pointer}
+    .admin-price-share{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--soft);text-align:center}.admin-price-share button{width:100%;min-height:44px;border:0;border-radius:12px;background:linear-gradient(135deg,#bd9138,#8f681e);color:#fff;font-weight:850;cursor:pointer}.admin-price-share .admin-note{margin-top:6px;color:var(--muted);font-size:10.5px;line-height:1.45}.share-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.share-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;min-height:42px;font-weight:800;font-size:11.5px;cursor:pointer}
     .note{margin:14px 1px 0;font-size:11px;line-height:1.55;color:var(--muted);text-align:center}.error{color:var(--danger)}.loading{opacity:.62}.official-link{display:inline-block;margin-top:10px;color:var(--gold-dark);font-size:11.5px;font-weight:850;text-decoration:none}
     .floating-wa{position:fixed;right:16px;bottom:18px;z-index:50;background:#25D366;color:#fff;text-decoration:none;border-radius:999px;padding:13px 16px;font-weight:900;font-size:12px;box-shadow:0 12px 34px rgba(0,0,0,.22)}
     footer{text-align:center;margin:18px 0 0;color:var(--muted);font-size:10.5px;line-height:1.55}
@@ -233,6 +233,11 @@
         <div class="grid">
           <div class="mini"><div class="k">MYR → BND</div><div class="v" id="fxRate">—</div></div>
           <div class="mini"><div class="k">Public Gold updated</div><div class="v" id="publicGoldUpdated">—</div></div>
+        </div>
+
+        <div class="admin-price-share" id="adminPriceShare" hidden>
+          <button type="button" id="sharePriceWhatsappBtn">Share Price Update to WhatsApp Group</button>
+          <div class="admin-note">Admin only — visible when Elleanor is signed in.</div>
         </div>
 
         <div class="calc-box">
@@ -587,6 +592,7 @@ const SUPABASE_URL='https://eplqerngcsctgphokxcg.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gjdLzdJCW-NFbBx3tX5KDg_duA4hflX';
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let currentUser=null;
+const ADMIN_EMAIL='elleanorkhairunisa@outlook.com';
 
 
 function money(v,c){v=Number.isFinite(v)?v:0;return c==='BND'?`B$${v.toFixed(2)}`:`RM${v.toFixed(2)}`}
@@ -805,6 +811,30 @@ function calculateZakat(){
 }
 
 
+function updateAdminControls(){
+  const box=el('adminPriceShare');
+  if(!box)return;
+  const isAdmin=!!(currentUser && currentUser.email && currentUser.email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
+  box.hidden=!isAdmin;
+}
+
+function sharePriceToWhatsApp(){
+  const updated=el('publicGoldUpdated')?.textContent||'—';
+  const message=[
+    '📈 PUBLIC GOLD PRICE UPDATE',
+    '',
+    `GAP Price: RM${state.myr.toFixed(0)}/g`,
+    `Approx. BND: B$${state.bnd.toFixed(2)}/g`,
+    `MYR → BND: RM1 = B$${state.rate.toFixed(4)}`,
+    `Public Gold updated: ${updated}`,
+    '',
+    'Gold with Elleanor',
+    'PG Code: PG00714936',
+    'https://goldwithelleanor.vercel.app'
+  ].join('\n');
+  window.location.href='https://wa.me/?text='+encodeURIComponent(message);
+}
+
 function setAuthUI(user){
   currentUser=user||null;
   if(currentUser){
@@ -822,6 +852,7 @@ function setAuthUI(user){
     el('syncBadge').textContent='📱 Saved on this device only';
     el('syncBadge').classList.remove('cloud');el('syncBadge').classList.add('local');
   }
+  updateAdminControls();
 }
 function openAuthModal(){el('authModal').classList.add('show');el('authEmail').focus()}
 function closeAuthModal(){el('authModal').classList.remove('show')}
@@ -856,6 +887,7 @@ el('nisabReachedDate').addEventListener('change',()=>{updateZakatReminder();});
 el('zakatReminderEnabled').addEventListener('change',()=>{updateZakatReminder();});el('saveTracker').addEventListener('click',saveTracker);el('resetTracker').addEventListener('click',resetTracker);
 el('calculateZakat').addEventListener('click',calculateZakat);el('zakatGrams').addEventListener('input',calculateZakat);el('haulComplete').addEventListener('change',calculateZakat);
 
+el('sharePriceWhatsappBtn')?.addEventListener('click',sharePriceToWhatsApp);
 el('shareBtn').addEventListener('click',async()=>{try{if(navigator.share)await navigator.share({title:'Gold with Elleanor',url:location.href});else{await navigator.clipboard.writeText(location.href);el('shareBtn').textContent='Link copied ✓';setTimeout(()=>el('shareBtn').textContent='Share this page',1600)}}catch(_){}});
 el('copyBtn').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);el('copyBtn').textContent='Copied ✓';setTimeout(()=>el('copyBtn').textContent='Copy link',1600)}catch(_){}});
 
