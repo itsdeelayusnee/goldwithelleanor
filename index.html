@@ -160,10 +160,39 @@
     .pg-code-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 9px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:10.5px;font-weight:800;color:var(--muted)}
     .pg-code-badge strong{color:var(--gold-dark)}
 
-  </style>
+  
+    /* Private preview access gate */
+    .private-gate{position:fixed;inset:0;z-index:100000;background:radial-gradient(circle at top right,rgba(215,170,74,.16),transparent 34%),#17130e;display:flex;align-items:center;justify-content:center;padding:22px}
+    .private-gate[hidden]{display:none!important}
+    .private-gate-card{width:min(100%,430px);background:#211b14;border:1px solid #4b3924;border-radius:28px;padding:30px 24px 24px;text-align:center;box-shadow:0 24px 90px rgba(0,0,0,.48);color:#f5ead7}
+    .private-gate-logo{display:block;width:118px;max-height:118px;object-fit:contain;margin:0 auto 14px}
+    .private-gate-eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#d7aa4a;font-weight:900;margin-bottom:8px}
+    .private-gate-card h2{font-family:Georgia,'Times New Roman',serif;font-size:31px;line-height:1.05;margin:0 0 12px;color:#f5ead7;font-weight:500}
+    .private-gate-card p{font-size:13px;line-height:1.65;color:#c8b99f;margin:0 auto 18px;max-width:340px}
+    .private-gate-input{width:100%;min-height:50px;border-radius:14px;border:1px solid #4a3824;background:#17130e;color:#fff;padding:0 15px;text-align:center;font-weight:800;letter-spacing:.06em;outline:none}
+    .private-gate-input:focus{border-color:#d7aa4a;box-shadow:0 0 0 3px rgba(215,170,74,.12)}
+    .private-gate-btn{width:100%;min-height:50px;border:0;border-radius:14px;margin-top:10px;background:linear-gradient(135deg,#d7aa4a,#9b6f1c);color:#fff;font-weight:900;cursor:pointer}
+    .private-gate-error{min-height:18px;margin:10px 0 0!important;color:#ef8f84!important;font-size:12px!important}
+    .private-gate-note{margin-top:15px!important;font-size:10.5px!important;color:#907f68!important}
+
+</style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
+  <section class="private-gate" id="privateGate" aria-label="Private preview access">
+    <div class="private-gate-card">
+      <img class="private-gate-logo" src="logo.png" alt="Gold with Elleanor" />
+      <div class="private-gate-eyebrow">Gold Savers Access</div>
+      <h2>Private Preview</h2>
+      <p>This website is still in development and is currently shared privately with selected Gold with Elleanor savers.</p>
+      <input class="private-gate-input" id="privateAccessCode" type="password" autocomplete="off" inputmode="text" placeholder="Enter access code" aria-label="Access code" />
+      <button class="private-gate-btn" id="privateAccessBtn" type="button">Enter Website</button>
+      <p class="private-gate-error" id="privateAccessError"></p>
+      <p class="private-gate-note">Please do not share the access code outside the saver community.</p>
+    </div>
+  </section>
+
   <main class="app">
     <div class="top-actions">
       <button class="icon-btn" id="installBtn" hidden>Install</button>
@@ -952,6 +981,36 @@ el('authModal').addEventListener('click',e=>{if(e.target===el('authModal'))close
 el('sendLoginLink').addEventListener('click',sendMagicLink);
 el('authEmail').addEventListener('keydown',e=>{if(e.key==='Enter')sendMagicLink()});
 el('signOutBtn').addEventListener('click',async()=>{await supabaseClient.auth.signOut();setAuthUI(null);await loadTracker()});
+
+
+// Private preview gate (light access protection for the development preview)
+const PRIVATE_PREVIEW_CODE='GWE2026';
+const PRIVATE_PREVIEW_KEY='gwePrivatePreviewAccess';
+function unlockPrivatePreview(){
+  const gate=el('privateGate');
+  if(gate) gate.hidden=true;
+}
+function checkPrivatePreviewAccess(){
+  try{
+    if(localStorage.getItem(PRIVATE_PREVIEW_KEY)==='granted') unlockPrivatePreview();
+  }catch(_){}
+}
+function submitPrivatePreviewCode(){
+  const input=el('privateAccessCode');
+  const error=el('privateAccessError');
+  if(!input)return;
+  if(input.value.trim()===PRIVATE_PREVIEW_CODE){
+    try{localStorage.setItem(PRIVATE_PREVIEW_KEY,'granted')}catch(_){}
+    if(error)error.textContent='';
+    unlockPrivatePreview();
+  }else{
+    if(error)error.textContent='Incorrect access code. Please check with Elleanor.';
+    input.select();
+  }
+}
+el('privateAccessBtn')?.addEventListener('click',submitPrivatePreviewCode);
+el('privateAccessCode')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitPrivatePreviewCode()});
+checkPrivatePreviewAccess();
 
 initAuth();loadPrice();setInterval(loadPrice,5*60*1000);
 </script>

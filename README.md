@@ -43,3 +43,9 @@ This build unregisters the previous service worker and clears old browser caches
 - Added Elleanor's professional portrait to the About section with dealer/educator positioning.
 
 - Added Public Gold Dealer Code PG00714936 to the About profile.
+
+
+## Private preview access
+Current preview access code: `GWE2026`
+
+This is a lightweight client-side preview gate intended to limit casual access during development, not a substitute for server-side authentication.
