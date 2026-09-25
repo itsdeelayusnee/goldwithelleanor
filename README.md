@@ -16,3 +16,6 @@ Deploy to Vercel from GitHub. Keep `api/gold-price.js` inside the `api` folder.
 
 ## Cloud tracker login
 Uses Supabase email magic-link authentication and the `gold_tracker` table protected by Row Level Security. Guests continue to use browser local storage.
+
+## Cache note
+This build unregisters the previous service worker and clears old browser caches so new Vercel deployments load immediately.
