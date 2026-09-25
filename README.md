@@ -41,3 +41,5 @@ This build unregisters the previous service worker and clears old browser caches
 - TNG calculator now shows two separate fee methods: 2.6% manual TNG top-up then transfer to Public Gold, and 3.0% direct top-up from the Public Gold app.
 
 - Added Elleanor's professional portrait to the About section with dealer/educator positioning.
+
+- Added Public Gold Dealer Code PG00714936 to the About profile.
