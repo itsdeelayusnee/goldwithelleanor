@@ -607,13 +607,19 @@ function renderProducts(){
 }
 
 function renderPrice(data,isLive){
-  state.myr=Number(data.goldPriceMYR||FALLBACK.myr);state.rate=Number(data.myrToBnd||FALLBACK.rate);state.bnd=state.myr*state.rate;state.isLive=isLive;
+  state.myr=Number(data.goldPriceMYR||FALLBACK.myr);
+  const rawBndPerMyr=Number(data.myrToBnd||FALLBACK.rate);
+  const displayedMyrPerBnd=rawBndPerMyr>0?Number((1/rawBndPerMyr).toFixed(3)):null;
+  state.rate=displayedMyrPerBnd?1/displayedMyrPerBnd:rawBndPerMyr;
+  state.bnd=state.myr*state.rate;
+  state.displayedMyrPerBnd=displayedMyrPerBnd;
+  state.isLive=isLive;
   state.products=data.products||state.products;
   el('myrPrice').textContent=state.myr.toFixed(0);el('bndPrice').textContent=state.bnd.toFixed(2);el('rm100Grams').textContent=(100/state.myr).toFixed(4);
   el('rm100Bnd').textContent=`B$${(100*state.rate).toFixed(2)}`;
   el('rm100TngManual').textContent=`Manual TNG top-up (2.6%): RM2.60 • Total RM102.60 ≈ B$${(102.60*state.rate).toFixed(2)}`;
   el('rm100TngDirect').textContent=`Direct top-up in Public Gold app (3.0%): RM3.00 • Total RM103.00 ≈ B$${(103.00*state.rate).toFixed(2)}`;
-  el('fxRate').textContent=state.rate>0?`B$1 = RM${(1/state.rate).toFixed(3)}`:'—';el('publicGoldUpdated').textContent=data.publicGoldUpdatedAt||'—';
+  el('fxRate').textContent=state.displayedMyrPerBnd?`B$1 = RM${state.displayedMyrPerBnd.toFixed(3)}`:'—';el('publicGoldUpdated').textContent=data.publicGoldUpdatedAt||'—';
   el('liveStatus').innerHTML=`<span class="dot"></span> ${isLive?'LIVE FROM PUBLIC GOLD':'FALLBACK PRICE'}`;el('liveStatus').style.color=isLive?'var(--ok)':'var(--danger)';
   el('productStatus').innerHTML=`<span class="dot"></span> ${isLive?'LIVE FROM PUBLIC GOLD':'UNAVAILABLE'}`;el('productStatus').style.color=isLive?'var(--ok)':'var(--danger)';el('productUpdated').textContent=data.publicGoldUpdatedAt||'—';
   renderProducts();updateTracker();calculateZakat();calculateBudget();
@@ -851,7 +857,7 @@ function sharePriceToWhatsApp(){
   }
 
   const updated=el('publicGoldUpdated')?.textContent||'—';
-  const myrPerBnd=state.rate>0?(1/state.rate):null;
+  const myrPerBnd=state.displayedMyrPerBnd||null;
 
   const message=[
     '🚨 GOLD PRICE ALERT',
