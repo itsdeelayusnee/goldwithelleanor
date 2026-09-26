@@ -209,6 +209,49 @@
       .intro-tagline{font-size:20px;white-space:nowrap}
     }
 
+
+    .history-entry-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+    .history-list{display:grid;gap:8px;margin-top:12px}
+    .history-row{display:grid;grid-template-columns:1.1fr .9fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft)}
+    .history-month{font-weight:850;color:var(--ink)}
+    .history-amount{font-weight:900;color:var(--gold-dark);text-align:right}
+    .history-remove{border:0;background:transparent;color:var(--muted);font-weight:900;cursor:pointer;padding:6px 8px}
+    .history-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+    .history-summary .stat{min-width:0}
+    .timeline-card{margin-top:12px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--soft)}
+    .timeline-eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:900}
+    .timeline-main{margin-top:5px;font-size:24px;line-height:1.1;font-weight:950;color:var(--ink)}
+    .timeline-date{margin-top:6px;font-size:12px;color:var(--muted)}
+    .timeline-source{margin-top:8px;font-size:10.5px;line-height:1.5;color:var(--muted)}
+    @media(max-width:600px){
+      .history-entry-grid{grid-template-columns:1fr 1fr}
+      .history-entry-grid .primary{grid-column:1/-1;width:100%}
+      .history-summary{grid-template-columns:1fr}
+      .history-row{grid-template-columns:1fr auto}
+      .history-amount{text-align:left}
+      .history-remove{grid-column:2;grid-row:1/3}
+    }
+
+
+    .dca-card{margin-top:14px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--soft)}
+    .dca-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}
+    .dca-title{font-weight:950;color:var(--ink);font-size:15px}
+    .dca-sub{margin-top:3px;font-size:10.5px;line-height:1.45;color:var(--muted)}
+    .dca-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .dca-metric{padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+    .dca-metric .k{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:850}
+    .dca-metric .v{margin-top:4px;font-size:16px;font-weight:950;color:var(--ink)}
+    .dca-status{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-size:11px;line-height:1.45;color:var(--muted)}
+    .dca-status strong{color:var(--ink)}
+    .history-entry-grid{grid-template-columns:1fr 1fr 1fr auto}
+    .timeline-detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+    @media(max-width:600px){
+      .history-entry-grid{grid-template-columns:1fr 1fr}
+      .history-entry-grid .history-grams-field{grid-column:1/-1}
+      .history-entry-grid .primary{grid-column:1/-1}
+      .dca-grid,.timeline-detail-grid{grid-template-columns:1fr 1fr}
+    }
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -396,15 +439,82 @@
     <section class="panel" id="trackerPanel">
       <section class="card">
         <h2 class="section-title">Gold Saving Tracker</h2>
-        <p class="section-copy">Start with your monthly saving plan, then compare it with your current gold and target progress.</p>
+        <p class="section-copy">Record what you actually save each month, see your average saving pace, project future gold accumulation and track progress toward your target.</p>
         <div class="sync-badge local" id="syncBadge">📱 Saved on this device only</div>
 
         <div class="tracker-section-card" style="margin-top:16px">
-          <h3 class="tracker-section-title">Monthly Gold Saving</h3>
-          <p class="tracker-section-copy">Enter how much you plan to save each month to estimate your possible gold accumulation over time.</p>
+          <h3 class="tracker-section-title">Gold Saving History</h3>
+          <p class="tracker-section-copy">Your saving amount does not have to be the same every month. Add each month separately — for example RM100 this month, RM500 next month and RM1,000 another month.</p>
+
+          <div class="history-entry-grid">
+            <div class="field">
+              <label class="field-label" for="historyMonth">Month</label>
+              <input id="historyMonth" type="month" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="historyAmount">Amount paid</label>
+              <div class="input-affix">
+                <input id="historyAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="e.g. 500" />
+                <span class="suffix">RM</span>
+              </div>
+            </div>
+            <div class="field history-grams-field">
+              <label class="field-label" for="historyGrams">Gold received</label>
+              <div class="input-affix">
+                <input id="historyGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 0.8000" />
+                <span class="suffix">g</span>
+              </div>
+            </div>
+            <button class="primary" id="addHistoryEntry" type="button">Add Month</button>
+          </div>
+
+          <div class="history-list" id="historyList"></div>
+
+          <div class="history-summary">
+            <div class="stat">
+              <div class="k">Months recorded</div>
+              <div class="v" id="historyCount">0</div>
+              <div class="sub">saving history entries</div>
+            </div>
+            <div class="stat">
+              <div class="k">Average saving</div>
+              <div class="v" id="historyAverageRM">RM0.00</div>
+              <div class="sub">per recorded month</div>
+            </div>
+            <div class="stat">
+              <div class="k">Average gold accumulated</div>
+              <div class="v" id="historyAverageG">0.0000g</div>
+              <div class="sub">per recorded month</div>
+            </div>
+          </div>
+
+          <div class="dca-card">
+            <div class="dca-head">
+              <div>
+                <div class="dca-title">DCA vs Current Price</div>
+                <div class="dca-sub">Your weighted average purchase price compared with today’s Public Gold GAP price.</div>
+              </div>
+            </div>
+            <div class="dca-grid">
+              <div class="dca-metric"><div class="k">Total contributed</div><div class="v" id="dcaTotalRM">RM0.00</div></div>
+              <div class="dca-metric"><div class="k">Total gold recorded</div><div class="v" id="dcaTotalG">0.0000g</div></div>
+              <div class="dca-metric"><div class="k">Your DCA average</div><div class="v" id="dcaAverage">—</div></div>
+              <div class="dca-metric"><div class="k">Current GAP price</div><div class="v" id="dcaCurrentPrice">—</div></div>
+              <div class="dca-metric"><div class="k">Price difference</div><div class="v" id="dcaDifference">—</div></div>
+              <div class="dca-metric"><div class="k">Difference vs DCA</div><div class="v" id="dcaPercent">—</div></div>
+            </div>
+            <div class="dca-status" id="dcaStatus">Add your actual RM amount and grams received for each month to calculate your DCA.</div>
+          </div>
+
+          <p class="note">For an accurate DCA, enter the actual RM paid and grams received for each purchase month. DCA = total amount contributed ÷ total grams accumulated.</p>
+        </div>
+
+        <div class="tracker-section-card">
+          <h3 class="tracker-section-title">Optional Fixed Monthly Projection</h3>
+          <p class="tracker-section-copy">Want to test a consistent monthly amount? Enter any RM amount here to see a simple 1, 3, 5 and 10-year projection. This does not replace your actual saving history.</p>
 
           <div class="field">
-            <label class="field-label" for="monthlySaving">Monthly gold saving</label>
+            <label class="field-label" for="monthlySaving">Monthly amount to project</label>
             <div class="input-affix">
               <input id="monthlySaving" type="number" min="0" step="1" inputmode="decimal" placeholder="e.g. 100" />
               <span class="suffix">RM</span>
@@ -422,7 +532,7 @@
           <div class="projection-card">
             <div class="projection-head">
               <h3>Annual Gold Saving Projection</h3>
-              <p>Based on today’s Public Gold price and the same monthly saving amount.</p>
+              <p>Based on today’s Public Gold price and the same monthly amount.</p>
             </div>
             <div class="projection-grid">
               <div class="projection-item"><div class="yr">1 Year</div><div class="grams" id="proj1y">0.0000g</div><div class="value" id="proj1yValue">RM0.00</div></div>
@@ -477,15 +587,27 @@
               <div class="sub" id="remainingValue">RM0.00 remaining</div>
             </div>
             <div class="stat">
-              <div class="k">Estimated time</div>
+              <div class="k">Estimated timeline</div>
               <div class="v" id="monthsToTarget">—</div>
-              <div class="sub">based on your monthly saving</div>
+              <div class="sub" id="timelineBasis">add saving history or a monthly projection</div>
             </div>
             <div class="stat">
               <div class="k">Target value</div>
               <div class="v" id="targetValueMYR">RM0.00</div>
               <div class="sub" id="targetValueBND">≈ B$0.00</div>
             </div>
+          </div>
+
+          <div class="timeline-card">
+            <div class="timeline-eyebrow">Estimated Timeline</div>
+            <div class="timeline-source" id="timelinePaceLabel">Add saving history or a monthly projection to estimate your pace.</div>
+            <div class="timeline-main" id="timelineMain">—</div>
+            <div class="timeline-date" id="timelineDate">Estimated target date: —</div>
+            <div class="timeline-detail-grid">
+              <div class="dca-metric"><div class="k">Remaining to target</div><div class="v" id="timelineRemaining">0.0000g</div></div>
+              <div class="dca-metric"><div class="k">Average gold / month</div><div class="v" id="timelineAverageG">—</div></div>
+            </div>
+            <div class="timeline-source">Calculated using your current gold, target and estimated monthly saving pace at today’s Public Gold price. Actual timing will change as gold prices and your saving pattern change.</div>
           </div>
         </div>
 
@@ -791,21 +913,183 @@ function calculate(){
   el('calcResult').textContent=`${grams.toLocaleString()}g ≈ ${money(grams*state.myr,'MYR')} • ${money(grams*state.bnd,'BND')}`;
 }
 
+
+const SAVING_HISTORY_KEY='goldWithElleanorSavingHistoryV1';
+let savingHistory=[];
+
+function loadSavingHistory(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(SAVING_HISTORY_KEY)||'[]');
+    savingHistory=Array.isArray(saved)?saved.filter(x=>x&&x.month&&Number(x.amount)>=0).map(x=>({...x,grams:Math.max(0,Number(x.grams)||0)})):[];
+  }catch(_){savingHistory=[]}
+  renderSavingHistory();
+}
+
+function saveSavingHistory(){
+  try{localStorage.setItem(SAVING_HISTORY_KEY,JSON.stringify(savingHistory))}catch(_){}
+}
+
+function historyAverageRM(){
+  if(!savingHistory.length)return 0;
+  return savingHistory.reduce((sum,x)=>sum+(Number(x.amount)||0),0)/savingHistory.length;
+}
+
+function renderSavingHistory(){
+  const list=el('historyList');
+  if(!list)return;
+  const sorted=[...savingHistory].sort((a,b)=>String(b.month).localeCompare(String(a.month)));
+  list.innerHTML=sorted.length?sorted.map(item=>{
+    const d=new Date(item.month+'-01T00:00:00');
+    const label=Number.isNaN(d.getTime())?item.month:new Intl.DateTimeFormat('en-BN',{month:'short',year:'numeric'}).format(d);
+    return `<div class="history-row">
+      <div class="history-month">${label}<div style="font-size:10px;color:var(--muted);font-weight:700;margin-top:2px">${Number(item.grams||0).toFixed(4)}g</div></div>
+      <div class="history-amount">RM${Number(item.amount).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+      <button class="history-remove" type="button" data-history-month="${item.month}" aria-label="Remove ${label}">✕</button>
+    </div>`;
+  }).join(''):`<div class="history-row"><div class="history-month">No monthly entries yet.</div><div class="history-amount">Add your first month above.</div></div>`;
+
+  const avg=historyAverageRM();
+  const totalGrams=savingHistory.reduce((sum,x)=>sum+(Number(x.grams)||0),0);
+  const avgGrams=savingHistory.length?totalGrams/savingHistory.length:0;
+  const totalRM=savingHistory.reduce((sum,x)=>sum+(Number(x.amount)||0),0);
+  const dca=totalGrams>0?totalRM/totalGrams:0;
+  const currentPrice=Number(state.myr)||0;
+  const diff=dca>0&&currentPrice>0?currentPrice-dca:0;
+  const pct=dca>0?diff/dca*100:0;
+
+  el('historyCount').textContent=String(savingHistory.length);
+  el('historyAverageRM').textContent=`RM${avg.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  el('historyAverageG').textContent=`${avgGrams.toFixed(4)}g`;
+
+  el('dcaTotalRM').textContent=`RM${totalRM.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  el('dcaTotalG').textContent=`${totalGrams.toFixed(4)}g`;
+  el('dcaAverage').textContent=dca>0?`RM${dca.toFixed(2)}/g`:'—';
+  el('dcaCurrentPrice').textContent=currentPrice>0?`RM${currentPrice.toFixed(2)}/g`:'—';
+  el('dcaDifference').textContent=dca>0&&currentPrice>0?`${diff>=0?'+':''}RM${diff.toFixed(2)}/g`:'—';
+  el('dcaPercent').textContent=dca>0&&currentPrice>0?`${pct>=0?'+':''}${pct.toFixed(2)}%`:'—';
+
+  if(dca>0&&currentPrice>0){
+    const recordedValue=totalGrams*currentPrice;
+    const valueDiff=recordedValue-totalRM;
+    el('dcaStatus').innerHTML=currentPrice>dca
+      ? `<strong>Current price is above your DCA average.</strong><br>Recorded gold value at today’s GAP price: RM${recordedValue.toFixed(2)} • Estimated difference: +RM${valueDiff.toFixed(2)}`
+      : currentPrice<dca
+      ? `<strong>Current price is below your DCA average.</strong><br>Recorded gold value at today’s GAP price: RM${recordedValue.toFixed(2)} • Estimated difference: RM${valueDiff.toFixed(2)}`
+      : `<strong>Current price is equal to your DCA average.</strong>`;
+  }else{
+    el('dcaStatus').textContent='Add your actual RM amount and grams received for each month to calculate your DCA.';
+  }
+
+  list.querySelectorAll('[data-history-month]').forEach(btn=>btn.addEventListener('click',()=>{
+    const month=btn.dataset.historyMonth;
+    savingHistory=savingHistory.filter(x=>x.month!==month);
+    saveSavingHistory();
+    renderSavingHistory();
+    updateTracker();
+  }));
+}
+
+function addSavingHistoryEntry(){
+  const month=el('historyMonth').value;
+  const amount=Math.max(0,Number(el('historyAmount').value)||0);
+  const grams=Math.max(0,Number(el('historyGrams').value)||0);
+  if(!month){el('savedMsg').textContent='Choose a month first.';setTimeout(()=>el('savedMsg').textContent='',1800);return}
+  if(amount<=0){el('savedMsg').textContent='Enter the RM amount paid for that month.';setTimeout(()=>el('savedMsg').textContent='',1800);return}
+  if(grams<=0){el('savedMsg').textContent='Enter the grams received for that month.';setTimeout(()=>el('savedMsg').textContent='',1800);return}
+
+  const existing=savingHistory.find(x=>x.month===month);
+  if(existing){existing.amount=amount;existing.grams=grams;}
+  else savingHistory.push({month,amount,grams});
+
+  saveSavingHistory();
+  el('historyAmount').value='';
+  el('historyGrams').value='';
+  renderSavingHistory();
+  updateTracker();
+  el('savedMsg').textContent='Monthly purchase added ✓';
+  setTimeout(()=>el('savedMsg').textContent='',1600);
+}
+
+function formatTimelineMonths(months){
+  if(!Number.isFinite(months)||months<=0)return '—';
+  const y=Math.floor(months/12), m=months%12;
+  if(y&&m)return `${y} year${y===1?'':'s'} ${m} month${m===1?'':'s'}`;
+  if(y)return `${y} year${y===1?'':'s'}`;
+  return `${m} month${m===1?'':'s'}`;
+}
+
+function projectedTargetDate(months){
+  if(!Number.isFinite(months)||months<=0)return null;
+  const d=new Date();
+  d.setMonth(d.getMonth()+months);
+  return new Intl.DateTimeFormat('en-BN',{month:'long',year:'numeric'}).format(d);
+}
+
 function trackerValues(){return{current:Math.max(0,Number(el('currentGrams').value)||0),target:Math.max(0,Number(el('targetGrams').value)||0),monthly:Math.max(0,Number(el('monthlySaving').value)||0)}}
 function updateMilestones(current){
-  const vals=[1,5,10,20,50,100,250];el('milestones').innerHTML=vals.map(v=>`<span class="milestone ${current>=v?'reached':''}">${v}g${current>=v?' ✓':''}</span>`).join('')
+  const vals=[1,5,10,20,50,100,250,500,750,1000];el('milestones').innerHTML=vals.map(v=>`<span class="milestone ${current>=v?'reached':''}">${v}g${current>=v?' ✓':''}</span>`).join('')
 }
 function updateTracker(){
-  const{current,target,monthly}=trackerValues();const raw=target>0?(current/target)*100:0;const progress=Math.min(100,Math.max(0,raw));const remaining=target>0?Math.max(0,target-current):0;
-  const currentM=current*state.myr,currentB=currentM*state.rate,remainingM=remaining*state.myr,monthlyG=state.myr>0?monthly/state.myr:0,months=remaining>0&&monthlyG>0?Math.ceil(remaining/monthlyG):0,targetM=target*state.myr,targetB=targetM*state.rate;
-  el('progressPercent').textContent=`${progress.toFixed(progress>=10?0:1)}%`;el('barFill').style.width=`${progress}%`;updateMilestones(current);
-  el('progressCopy').textContent=target<=0?'Enter your current gold and target to start tracking.':remaining<=0?`Target reached — ${current.toFixed(4)}g saved.`:`${current.toFixed(4)}g of ${target.toFixed(4)}g saved.`;
-  el('currentValueMYR').textContent=money(currentM,'MYR');el('currentValueBND').textContent=`≈ ${money(currentB,'BND')}`;el('remainingGrams').textContent=`${remaining.toFixed(4)}g`;el('remainingValue').textContent=`${money(remainingM,'MYR')} remaining`;
-  el('monthlyGrams').textContent=`${monthlyG.toFixed(4)}g`;el('monthlyBnd').textContent=`${money(monthly,'MYR')} ≈ ${money(monthly*state.rate,'BND')}`;el('monthsToTarget').textContent=remaining<=0&&target>0?'Target reached':months>0?`≈ ${months} month${months===1?'':'s'}`:'—';
-  el('targetValueMYR').textContent=money(targetM,'MYR');el('targetValueBND').textContent=`≈ ${money(targetB,'BND')}`;
+  const{current,target,monthly}=trackerValues();
+  const raw=target>0?(current/target)*100:0;
+  const progress=Math.min(100,Math.max(0,raw));
+  const remaining=target>0?Math.max(0,target-current):0;
+  const currentM=current*state.myr,currentB=currentM*state.rate,remainingM=remaining*state.myr,targetM=target*state.myr,targetB=targetM*state.rate;
 
-  const monthlyGold = state.myr>0 ? monthly/state.myr : 0;
+  const avgHistoryRM=historyAverageRM();
+  const totalHistoryG=savingHistory.reduce((sum,x)=>sum+(Number(x.grams)||0),0);
+  const avgHistoryG=savingHistory.length?totalHistoryG/savingHistory.length:0;
+  const paceRM=avgHistoryRM>0?avgHistoryRM:monthly;
+  const paceSource=avgHistoryG>0?'actual saving history':'fixed monthly projection';
+  const paceGold=avgHistoryG>0?avgHistoryG:(state.myr>0?paceRM/state.myr:0);
+  const months=remaining>0&&paceGold>0?Math.ceil(remaining/paceGold):0;
+
+  el('progressPercent').textContent=`${progress.toFixed(progress>=10?0:1)}%`;
+  el('barFill').style.width=`${progress}%`;
+  updateMilestones(current);
+  el('progressCopy').textContent=target<=0?'Enter your current gold and target to start tracking.':remaining<=0?`Target reached — ${current.toFixed(4)}g saved.`:`${current.toFixed(4)}g of ${target.toFixed(4)}g saved.`;
+  el('currentValueMYR').textContent=money(currentM,'MYR');
+  el('currentValueBND').textContent=`≈ ${money(currentB,'BND')}`;
+  el('remainingGrams').textContent=`${remaining.toFixed(4)}g`;
+  el('remainingValue').textContent=`${money(remainingM,'MYR')} remaining`;
+
+  const monthlyG=state.myr>0?monthly/state.myr:0;
+  el('monthlyGrams').textContent=`${monthlyG.toFixed(4)}g`;
+  el('monthlyBnd').textContent=`${money(monthly,'MYR')} ≈ ${money(monthly*state.rate,'BND')}`;
+
+  if(el('timelineRemaining'))el('timelineRemaining').textContent=`${remaining.toFixed(4)}g`;
+  if(el('timelineAverageG'))el('timelineAverageG').textContent=paceGold>0?`${paceGold.toFixed(4)}g`:'—';
+
+  if(remaining<=0&&target>0){
+    el('monthsToTarget').textContent='Target reached';
+    el('timelineBasis').textContent='your target has been reached';
+    el('timelinePaceLabel').textContent='Target reached based on your current gold balance.';
+    el('timelineMain').textContent='Target reached';
+    el('timelineDate').textContent='Estimated target date: reached';
+  }else if(months>0){
+    const formatted=formatTimelineMonths(months);
+    const date=projectedTargetDate(months);
+    el('monthsToTarget').textContent=formatted;
+    el('timelineBasis').textContent=`based on your ${paceSource}`;
+    el('timelinePaceLabel').textContent=avgHistoryG>0
+      ? `Based on your actual saving history: average ${paceGold.toFixed(4)}g/month`
+      : `Based on your fixed projection: RM${paceRM.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}/month ≈ ${paceGold.toFixed(4)}g/month`;
+    el('timelineMain').textContent=formatted;
+    el('timelineDate').textContent=`Estimated target date: ${date||'—'}`;
+  }else{
+    el('monthsToTarget').textContent='—';
+    el('timelineBasis').textContent='add saving history or a monthly projection';
+    el('timelinePaceLabel').textContent='Add saving history or a monthly projection to estimate your pace.';
+    el('timelineMain').textContent='—';
+    el('timelineDate').textContent='Estimated target date: —';
+  }
+
+  el('targetValueMYR').textContent=money(targetM,'MYR');
+  el('targetValueBND').textContent=`≈ ${money(targetB,'BND')}`;
+
+  const monthlyGold=state.myr>0?monthly/state.myr:0;
   updateZakatReminder();
+  renderSavingHistory();
 
   [
     [1,'proj1y','proj1yValue'],
@@ -813,9 +1097,9 @@ function updateTracker(){
     [5,'proj5y','proj5yValue'],
     [10,'proj10y','proj10yValue']
   ].forEach(([years,gramsId,valueId])=>{
-    const months=years*12;
-    const gramsProjected=monthlyGold*months;
-    const rmSaved=monthly*months;
+    const projectionMonths=years*12;
+    const gramsProjected=monthlyGold*projectionMonths;
+    const rmSaved=monthly*projectionMonths;
     el(gramsId).textContent=`${gramsProjected.toFixed(4)}g`;
     el(valueId).textContent=`RM${rmSaved.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
   });
@@ -871,6 +1155,9 @@ async function loadTracker(){
 }
 async function resetTracker(){
   ['currentGrams','targetGrams','monthlySaving','nisabReachedDate'].forEach(i=>el(i).value='');
+  savingHistory=[];
+  try{localStorage.removeItem(SAVING_HISTORY_KEY)}catch(_){}
+  renderSavingHistory();
   el('zakatReminderEnabled').checked=false;
   if(currentUser){
     const {error}=await supabaseClient.from('gold_tracker').delete().eq('user_id',currentUser.id);
@@ -1028,6 +1315,9 @@ document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>
 document.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>{el('budgetRM').value=b.dataset.amount;calculateBudget()}));
 el('budgetCalc').addEventListener('click',calculateBudget);el('budgetRM').addEventListener('input',calculateBudget);el('calculate').addEventListener('click',calculate);el('grams').addEventListener('keydown',e=>{if(e.key==='Enter')calculate()});
 ['currentGrams','targetGrams','monthlySaving'].forEach(i=>el(i).addEventListener('input',updateTracker));
+el('addHistoryEntry').addEventListener('click',addSavingHistoryEntry);
+el('historyAmount').addEventListener('keydown',e=>{if(e.key==='Enter')addSavingHistoryEntry()});
+el('historyGrams').addEventListener('keydown',e=>{if(e.key==='Enter')addSavingHistoryEntry()});
 el('nisabReachedDate').addEventListener('change',()=>{updateZakatReminder();});
 el('zakatReminderEnabled').addEventListener('change',()=>{updateZakatReminder();});el('saveTracker').addEventListener('click',saveTracker);el('resetTracker').addEventListener('click',resetTracker);
 el('calculateZakat').addEventListener('click',calculateZakat);el('zakatGrams').addEventListener('input',calculateZakat);el('haulComplete').addEventListener('change',calculateZakat);
@@ -1128,7 +1418,7 @@ el('privateAccessBtn')?.addEventListener('click',submitPrivatePreviewCode);
 el('privateAccessCode')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitPrivatePreviewCode()});
 checkPrivatePreviewAccess();
 
-initAuth();loadPrice();setInterval(loadPrice,5*60*1000);
+loadSavingHistory();initAuth();loadPrice();setInterval(loadPrice,5*60*1000);
 </script>
 </body>
 </html>
