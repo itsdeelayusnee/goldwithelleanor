@@ -267,6 +267,17 @@
       .goal-result-grid{grid-template-columns:1fr 1fr}
     }
 
+
+    #trackerPanel .tracker-section-card{
+      margin-top:16px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      background:var(--card);
+    }
+    #trackerPanel .tracker-section-card + .tracker-section-card{margin-top:18px}
+    #trackerPanel .tracker-section-title{margin-top:0}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -454,7 +465,7 @@
     <section class="panel" id="trackerPanel">
       <section class="card">
         <h2 class="section-title">Gold Saving Tracker</h2>
-        <p class="section-copy">Record what you actually save each month, see your average saving pace, project future gold accumulation and track progress toward your target.</p>
+        <p class="section-copy">Use each tracker separately depending on what you want to check — saving history, DCA, projections, gold progress, timeline or a BND-based gold goal.</p>
         <div class="sync-badge local" id="syncBadge">📱 Saved on this device only</div>
 
         <div class="tracker-section-card" style="margin-top:16px">
@@ -502,7 +513,11 @@
               <div class="sub">per recorded month</div>
             </div>
           </div>
+        </div>
 
+        <div class="tracker-section-card">
+          <h3 class="tracker-section-title">DCA Tracker</h3>
+          <p class="tracker-section-copy">Track your weighted average purchase price and compare it with today’s Public Gold GAP price.</p>
           <div class="dca-card">
             <div class="dca-head">
               <div>
@@ -613,19 +628,14 @@
             </div>
           </div>
 
-          <div class="timeline-card">
-            <div class="timeline-eyebrow">Estimated Timeline</div>
-            <div class="timeline-source" id="timelinePaceLabel">Add saving history or a monthly projection to estimate your pace.</div>
-            <div class="timeline-main" id="timelineMain">—</div>
-            <div class="timeline-date" id="timelineDate">Estimated target date: —</div>
-            <div class="timeline-detail-grid">
-              <div class="dca-metric"><div class="k">Remaining to target</div><div class="v" id="timelineRemaining">0.0000g</div></div>
-              <div class="dca-metric"><div class="k">Average gold / month</div><div class="v" id="timelineAverageG">—</div></div>
-            </div>
-            <div class="timeline-source">Calculated using your current gold, target and estimated monthly saving pace at today’s Public Gold price. Actual timing will change as gold prices and your saving pattern change.</div>
-          </div>
         </div>
 
+        <div class="tracker-section-card">
+          <h3 class="tracker-section-title">Estimated Timeline</h3>
+          <p class="tracker-section-copy">See approximately how long it may take to reach your gold target based on your actual average saving pace.</p>
+          <div class="timeline-card">
+            <div class="timeline-eyebrow">Estimated Timeline</div>
+        </div>
 
         <div class="tracker-section-card">
           <h3 class="tracker-section-title">Gold Goal Check</h3>
