@@ -295,6 +295,28 @@
     #calculatorPanel .section-copy{margin-bottom:0}
     #calculatorPanel .calculator-main-card{margin-top:22px}
 
+
+    #calculatorPanel .goal-summary{
+      margin-top:14px;
+      padding:14px 15px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:var(--card);
+      font-size:12px;
+      line-height:1.6;
+      color:var(--muted);
+    }
+    #calculatorPanel .goal-summary strong{
+      display:block;
+      color:var(--ink);
+      font-size:14px;
+      margin-bottom:4px;
+    }
+    #calculatorPanel .goal-share{
+      width:100%;
+      margin-top:12px;
+    }
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -595,6 +617,13 @@
             <strong>Set your goal to begin.</strong>
             Enter a BND target and timeline to estimate how much gold and monthly saving may be needed.
           </div>
+
+          <div class="goal-summary" id="goalSummary">
+            <strong>Your goal summary will appear here.</strong>
+            Enter a target value and timeline above.
+          </div>
+
+          <button class="primary goal-share" id="shareGoalWhatsApp" type="button" disabled>Share Result on WhatsApp</button>
 
           <p class="note">Based on today’s Public Gold GAP price and the BND conversion shown on this website. The grams required will change as gold prices and exchange rates change.</p>
         </div>
@@ -1020,6 +1049,8 @@ function updateGoalCheck(){
   const months=years*12;
   const bndPerGram=Number(state.bnd)||0;
   const box=el('goalStatus');
+  const summary=el('goalSummary');
+  const shareBtn=el('shareGoalWhatsApp');
 
   if(targetBND<=0||months<=0||bndPerGram<=0){
     if(el('goalGoldNeeded'))el('goalGoldNeeded').textContent='—';
@@ -1027,6 +1058,8 @@ function updateGoalCheck(){
     if(el('goalRequiredBND'))el('goalRequiredBND').textContent='—';
     box.className='goal-status';
     box.innerHTML='<strong>Set your goal to begin.</strong>Enter a BND target and timeline to estimate how much gold and monthly saving may be needed.';
+    if(summary)summary.innerHTML='<strong>Your goal summary will appear here.</strong>Enter a target value and timeline above.';
+    if(shareBtn)shareBtn.disabled=true;
     return;
   }
 
@@ -1039,7 +1072,26 @@ function updateGoalCheck(){
   if(el('goalRequiredBND'))el('goalRequiredBND').textContent=`B$${requiredBND.toFixed(2)}/month`;
 
   box.className='goal-status';
-  box.innerHTML=`<strong>You need about ${targetGrams.toFixed(2)}g of gold.</strong>To aim for B$${targetBND.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} in ${years} year${years===1?'':'s'}, the estimated pace is ${requiredPace.toFixed(2)}g per month, or about B$${requiredBND.toFixed(2)} per month based on today’s figures.`;
+  box.innerHTML=`<strong>Goal estimate ready.</strong>Calculated using today’s Public Gold GAP price and the current BND conversion shown on this website.`;
+
+  if(summary){
+    summary.innerHTML=`<strong>To aim for B$${targetBND.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} in ${years} year${years===1?'':'s'}:</strong>You would need approximately ${targetGrams.toFixed(2)}g of gold, or about ${requiredPace.toFixed(2)}g per month — approximately B$${requiredBND.toFixed(2)} per month based on today’s figures.`;
+  }
+
+  if(shareBtn){
+    shareBtn.disabled=false;
+    shareBtn.dataset.shareText=[
+      'My Gold Goal ✨',
+      `Target: B$${targetBND.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`,
+      `Timeline: ${years} year${years===1?'':'s'}`,
+      `Estimated gold needed: ${targetGrams.toFixed(2)}g`,
+      `Monthly gold target: ${requiredPace.toFixed(2)}g/month`,
+      `Estimated monthly saving: B$${requiredBND.toFixed(2)}/month`,
+      '',
+      'Estimate based on today’s Public Gold GAP price and BND conversion shown on Gold with Elleanor.',
+      'https://goldwithelleanor.vercel.app'
+    ].join('\n');
+  }
 }
 function updateZakatReminder(){
   const grams=Math.max(0,Number(el('currentGrams').value)||0);
@@ -1198,6 +1250,12 @@ document.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>{
 el('budgetCalc').addEventListener('click',calculateBudget);el('budgetRM').addEventListener('input',calculateBudget);el('calculate').addEventListener('click',calculate);el('grams').addEventListener('keydown',e=>{if(e.key==='Enter')calculate()});
 ['currentGrams','targetGrams'].forEach(i=>el(i).addEventListener('input',updateTracker));
 ['goalTargetBND','goalYears'].forEach(i=>el(i)?.addEventListener('input',()=>{saveGoalCheck();updateGoalCheck();}));
+el('shareGoalWhatsApp')?.addEventListener('click',()=>{
+  const btn=el('shareGoalWhatsApp');
+  const text=btn?.dataset.shareText||'';
+  if(!text)return;
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,'_blank','noopener,noreferrer');
+});
 el('nisabReachedDate').addEventListener('change',()=>{updateZakatReminder();});
 el('zakatReminderEnabled').addEventListener('change',()=>{updateZakatReminder();});el('saveTracker').addEventListener('click',saveTracker);el('resetTracker').addEventListener('click',resetTracker);
 el('calculateZakat').addEventListener('click',calculateZakat);el('zakatGrams').addEventListener('input',calculateZakat);el('haulComplete').addEventListener('change',calculateZakat);
