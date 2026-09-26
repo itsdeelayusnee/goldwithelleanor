@@ -34,7 +34,7 @@
     .brand h1{font-family:Georgia,serif;font-size:26px;font-weight:500;margin:0}.brand p{margin:5px auto 0;color:var(--muted);font-size:12px;line-height:1.5;max-width:430px}
     .intro{background:linear-gradient(135deg,var(--soft),var(--card));border:1px solid var(--line);border-radius:20px;padding:16px 18px;margin:14px 0}
     .intro strong{font-family:Georgia,serif;font-size:19px;font-weight:500}.intro p{margin:6px 0 0;color:var(--muted);font-size:12.5px;line-height:1.55}
-    .tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;background:color-mix(in srgb,var(--card) 82%,transparent);border:1px solid var(--line);border-radius:17px;padding:6px;margin-bottom:14px;position:sticky;top:8px;z-index:20;backdrop-filter:blur(12px)}
+    .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:color-mix(in srgb,var(--card) 82%,transparent);border:1px solid var(--line);border-radius:17px;padding:6px;margin-bottom:14px;position:sticky;top:8px;z-index:20;backdrop-filter:blur(12px)}
     .tab-btn{border:0;border-radius:12px;min-height:44px;padding:8px 6px;font-size:11.5px;font-weight:850;cursor:pointer;color:var(--muted);background:transparent}
     .tab-btn.active{color:#fff;background:linear-gradient(135deg,#bd9138,#8f681e)}
     .panel{display:none}.panel.active{display:block}
@@ -1197,7 +1197,7 @@ async function initAuth(){
 }
 
 
-document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');el(b.dataset.tab).classList.add('active');const tabs=document.querySelector('.tabs');window.scrollTo({top:tabs.offsetTop+tabs.offsetHeight+8,behavior:'smooth'})}));
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');const panel=el(b.dataset.tab);panel.classList.add('active');const tabs=document.querySelector('.tabs');const target=Math.max(0,panel.offsetTop-tabs.offsetHeight-16);window.scrollTo({top:target,behavior:'smooth'})}));
 document.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>{el('budgetRM').value=b.dataset.amount;calculateBudget()}));
 el('budgetCalc').addEventListener('click',calculateBudget);el('budgetRM').addEventListener('input',calculateBudget);el('calculate').addEventListener('click',calculate);el('grams').addEventListener('keydown',e=>{if(e.key==='Enter')calculate()});
 ['currentGrams','targetGrams'].forEach(i=>el(i).addEventListener('input',updateTracker));
