@@ -500,7 +500,7 @@
     <section class="panel" id="trackerPanel">
       <section class="card">
         <h2 class="section-title">Gold Saving Tracker</h2>
-        <p class="section-copy">Four simple tools: track your overall gold progress, record saving history with DCA, check a future goal, and keep your zakat reminder.</p>
+        <p class="section-copy">Three simple tools: track your gold progress, record saving history with DCA, and check a future goal. Zakat haul tracking appears automatically once your gold reaches 85g.</p>
         <div class="sync-badge local" id="syncBadge">📱 Saved on this device only</div>
 
         <div class="tracker-section-card" style="margin-top:16px">
@@ -540,16 +540,33 @@
               <div class="v" id="remainingGrams">0.0000g</div>
               <div class="sub" id="remainingValue">RM0.00 remaining</div>
             </div>
-            <div class="stat">
-              <div class="k">Progress</div>
-              <div class="v" id="currentTargetProgress">0%</div>
-              <div class="sub">towards your gram target</div>
-            </div>
+
           </div>
 
           <div class="nisab-trigger" id="nisabTrigger">
             <strong>⚠️ 85g nisab reached</strong>
-            Your gold has reached the nisab reference. Use the Zakat Reminder below to start tracking your haul.
+            Your gold has reached the nisab reference. You can now track your haul below.
+          </div>
+
+          <div class="zakat-reminder-extra" id="zakatReminderExtra">
+            <div class="tracker-section-copy" style="margin-top:14px"><strong style="color:var(--ink)">Zakat Haul Reminder</strong><br>Enter the date you first reached 85g to track one full haul year.</div>
+            <div class="zakat-reminder-grid">
+              <div class="field">
+                <label class="field-label" for="nisabReachedDate">Date first reached 85g</label>
+                <input id="nisabReachedDate" type="date" />
+              </div>
+              <div class="field">
+                <label class="field-label">Reminder</label>
+                <label class="check-row" style="margin-top:8px">
+                  <input id="zakatReminderEnabled" type="checkbox" />
+                  <span>Show reminder when one full haul year has completed.</span>
+                </label>
+              </div>
+            </div>
+            <div class="zakat-reminder-status" id="zakatReminderStatus">
+              <strong>Nisab reached</strong>
+              <span>Enter the date you first reached 85g to start tracking your haul.</span>
+            </div>
           </div>
         </div>
 
@@ -666,40 +683,6 @@
             </div>
 
             <p class="note">Based on today’s Public Gold GAP price and the BND conversion shown on this website. The grams required will change as gold prices and exchange rates change.</p>
-          </div>
-        </div>
-
-        <div class="zakat-reminder-card">
-          <h3>Zakat Reminder</h3>
-          <p>Enter your current gold. If you have reached 85g, the haul tracking fields will appear automatically.</p>
-
-          <div class="field" style="margin-top:13px">
-            <label class="field-label" for="reminderGoldGrams">Current gold</label>
-            <div class="input-affix">
-              <input id="reminderGoldGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 100" />
-              <span class="suffix">g</span>
-            </div>
-          </div>
-
-          <div class="zakat-reminder-status" id="zakatReminderStatus">
-            <strong>Below the 85g nisab reference</strong>
-            <span>Enter your current gold to check whether the reminder is relevant yet.</span>
-          </div>
-
-          <div class="zakat-reminder-extra" id="zakatReminderExtra">
-            <div class="zakat-reminder-grid">
-              <div class="field">
-                <label class="field-label" for="nisabReachedDate">Date first reached 85g</label>
-                <input id="nisabReachedDate" type="date" />
-              </div>
-              <div class="field">
-                <label class="field-label">Reminder</label>
-                <label class="check-row" style="margin-top:8px">
-                  <input id="zakatReminderEnabled" type="checkbox" />
-                  <span>Show reminder when one full haul year has completed.</span>
-                </label>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1116,7 +1099,6 @@ function updateTracker(){
   const targetB=targetM*state.rate;
 
   el('progressPercent').textContent=`${progress.toFixed(progress>=10?0:1)}%`;
-  el('currentTargetProgress').textContent=`${progress.toFixed(progress>=10?0:1)}%`;
   el('barFill').style.width=`${progress}%`;
   updateMilestones(current);
 
@@ -1155,7 +1137,6 @@ async function saveTracker(){
     localStorage.setItem(storageKey,JSON.stringify({
       currentGrams:el('currentGrams').value,
       targetGrams:el('targetGrams').value,
-      reminderGoldGrams:el('reminderGoldGrams').value,
       nisabReachedDate:el('nisabReachedDate').value,
       zakatReminderEnabled:el('zakatReminderEnabled').checked
     }));
@@ -1178,7 +1159,6 @@ async function loadTracker(){
       if(s){
         el('currentGrams').value=s.currentGrams||'';
         el('targetGrams').value=s.targetGrams||'';
-        el('reminderGoldGrams').value=s.reminderGoldGrams||'';
         el('nisabReachedDate').value=s.nisabReachedDate||'';
         el('zakatReminderEnabled').checked=Boolean(s.zakatReminderEnabled);
       }
@@ -1187,11 +1167,10 @@ async function loadTracker(){
   updateTracker();
 }
 async function resetTracker(){
-  ['currentGrams','targetGrams','reminderGoldGrams','nisabReachedDate'].forEach(i=>el(i).value='');
+  ['currentGrams','targetGrams','nisabReachedDate'].forEach(i=>el(i).value='');
   savingHistory=[];
   try{localStorage.removeItem(SAVING_HISTORY_KEY)}catch(_){}
   try{localStorage.removeItem(GOAL_CHECK_KEY)}catch(_){}  ['goalTargetBND','goalYears'].forEach(i=>{if(el(i))el(i).value='';});
-  ['reminderGoldGrams'].forEach(i=>{if(el(i))el(i).value='';});
   renderSavingHistory();
   el('zakatReminderEnabled').checked=false;
   if(currentUser){
@@ -1257,17 +1236,20 @@ function updateGoalCheck(){
   box.innerHTML=`<strong>You need about ${targetGrams.toFixed(2)}g of gold.</strong>To aim for B$${targetBND.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} in ${years} year${years===1?'':'s'}, the estimated pace is ${requiredPace.toFixed(2)}g per month, or about B$${requiredBND.toFixed(2)} per month based on today’s figures.`;
 }
 function updateZakatReminder(){
-  const grams=Math.max(0,Number(el('reminderGoldGrams').value)||0);
+  const grams=Math.max(0,Number(el('currentGrams').value)||0);
   const dateValue=el('nisabReachedDate').value;
   const enabled=el('zakatReminderEnabled').checked;
   const box=el('zakatReminderStatus');
   const extra=el('zakatReminderExtra');
+  const trigger=el('nisabTrigger');
+
+  if(extra)extra.classList.toggle('show',grams>=85);
+  if(trigger)trigger.classList.toggle('show',grams>=85);
+  if(!box)return;
 
   box.classList.remove('due','ok','warning');
-  if(extra)extra.classList.toggle('show',grams>=85);
 
   if(grams<85){
-    box.innerHTML=`<strong>Below the 85g nisab reference</strong><span>Current gold: ${grams.toFixed(4)}g. Haul tracking will appear once your gold reaches 85g.</span>`;
     return;
   }
 
@@ -1413,7 +1395,6 @@ el('budgetCalc').addEventListener('click',calculateBudget);el('budgetRM').addEve
 el('addHistoryEntry').addEventListener('click',addSavingHistoryEntry);
 el('historyAmount').addEventListener('keydown',e=>{if(e.key==='Enter')addSavingHistoryEntry()});
 el('historyGrams').addEventListener('keydown',e=>{if(e.key==='Enter')addSavingHistoryEntry()});
-el('reminderGoldGrams').addEventListener('input',()=>{updateZakatReminder();});
 el('nisabReachedDate').addEventListener('change',()=>{updateZakatReminder();});
 el('zakatReminderEnabled').addEventListener('change',()=>{updateZakatReminder();});el('saveTracker').addEventListener('click',saveTracker);el('resetTracker').addEventListener('click',resetTracker);
 el('calculateZakat').addEventListener('click',calculateZakat);el('zakatGrams').addEventListener('input',calculateZakat);el('haulComplete').addEventListener('change',calculateZakat);
