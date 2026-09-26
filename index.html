@@ -292,6 +292,27 @@
 
     .standalone-note{margin-top:8px;font-size:10.5px;line-height:1.5;color:var(--muted)}
 
+
+    .nisab-trigger{
+      display:none;
+      margin-top:12px;
+      padding:13px 14px;
+      border:1px solid rgba(215,170,74,.55);
+      border-radius:14px;
+      background:rgba(215,170,74,.10);
+      font-size:11.5px;
+      line-height:1.55;
+      color:var(--muted);
+    }
+    .nisab-trigger.show{display:block}
+    .nisab-trigger strong{display:block;color:var(--gold-dark);font-size:13px;margin-bottom:4px}
+
+
+    .zakat-reminder-extra{display:none}
+    .zakat-reminder-extra.show{display:block}
+    .zakat-reminder-status.warning{border-color:rgba(215,170,74,.55);background:rgba(215,170,74,.10)}
+    .zakat-reminder-status.warning strong{color:var(--gold-dark)}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -515,25 +536,20 @@
 
           <div class="tracker-stats">
             <div class="stat">
-              <div class="k">Current value</div>
-              <div class="v" id="currentValueMYR">RM0.00</div>
-              <div class="sub" id="currentValueBND">≈ B$0.00</div>
-            </div>
-            <div class="stat">
               <div class="k">Gold remaining</div>
               <div class="v" id="remainingGrams">0.0000g</div>
               <div class="sub" id="remainingValue">RM0.00 remaining</div>
-            </div>
-            <div class="stat">
-              <div class="k">Target value</div>
-              <div class="v" id="targetValueMYR">RM0.00</div>
-              <div class="sub" id="targetValueBND">≈ B$0.00</div>
             </div>
             <div class="stat">
               <div class="k">Progress</div>
               <div class="v" id="currentTargetProgress">0%</div>
               <div class="sub">towards your gram target</div>
             </div>
+          </div>
+
+          <div class="nisab-trigger" id="nisabTrigger">
+            <strong>⚠️ 85g nisab reached</strong>
+            Your gold has reached the nisab reference. Use the Zakat Reminder below to start tracking your haul.
           </div>
         </div>
 
@@ -655,32 +671,35 @@
 
         <div class="zakat-reminder-card">
           <h3>Zakat Reminder</h3>
-          <p>Track when your gold first reached the KHEU nisab reference of 85g and check when one full haul year is completed.</p>
+          <p>Enter your current gold. If you have reached 85g, the haul tracking fields will appear automatically.</p>
 
-          <div class="zakat-reminder-grid">
-            <div class="field">
-              <label class="field-label" for="reminderGoldGrams">Current gold</label>
-              <div class="input-affix">
-                <input id="reminderGoldGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 100" />
-                <span class="suffix">g</span>
-              </div>
-            </div>
-            <div class="field">
-              <label class="field-label" for="nisabReachedDate">Date first reached 85g</label>
-              <input id="nisabReachedDate" type="date" />
-            </div>
-            <div class="field">
-              <label class="field-label">Reminder</label>
-              <label class="check-row" style="margin-top:8px">
-                <input id="zakatReminderEnabled" type="checkbox" />
-                <span>Show zakat reminder when one year has completed.</span>
-              </label>
+          <div class="field" style="margin-top:13px">
+            <label class="field-label" for="reminderGoldGrams">Current gold</label>
+            <div class="input-affix">
+              <input id="reminderGoldGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 100" />
+              <span class="suffix">g</span>
             </div>
           </div>
 
           <div class="zakat-reminder-status" id="zakatReminderStatus">
-            <strong>Below nisab or not configured</strong>
-            <span>Enter your current gold and the date you first reached 85g.</span>
+            <strong>Below the 85g nisab reference</strong>
+            <span>Enter your current gold to check whether the reminder is relevant yet.</span>
+          </div>
+
+          <div class="zakat-reminder-extra" id="zakatReminderExtra">
+            <div class="zakat-reminder-grid">
+              <div class="field">
+                <label class="field-label" for="nisabReachedDate">Date first reached 85g</label>
+                <input id="nisabReachedDate" type="date" />
+              </div>
+              <div class="field">
+                <label class="field-label">Reminder</label>
+                <label class="check-row" style="margin-top:8px">
+                  <input id="zakatReminderEnabled" type="checkbox" />
+                  <span>Show reminder when one full haul year has completed.</span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1107,12 +1126,13 @@ function updateTracker(){
     ?`Target reached — ${current.toFixed(4)}g accumulated.`
     :`${current.toFixed(4)}g of ${target.toFixed(4)}g accumulated.`;
 
-  el('currentValueMYR').textContent=money(currentM,'MYR');
-  el('currentValueBND').textContent=`≈ ${money(currentB,'BND')}`;
   el('remainingGrams').textContent=`${remaining.toFixed(4)}g`;
   el('remainingValue').textContent=`${money(remainingM,'MYR')} remaining`;
-  el('targetValueMYR').textContent=money(targetM,'MYR');
-  el('targetValueBND').textContent=`≈ ${money(targetB,'BND')}`;
+
+  const nisabTrigger=el('nisabTrigger');
+  if(nisabTrigger){
+    nisabTrigger.classList.toggle('show',current>=85);
+  }
 
   updateZakatReminder();
   updateGoalCheck();
@@ -1241,15 +1261,20 @@ function updateZakatReminder(){
   const dateValue=el('nisabReachedDate').value;
   const enabled=el('zakatReminderEnabled').checked;
   const box=el('zakatReminderStatus');
-  box.classList.remove('due','ok');
+  const extra=el('zakatReminderExtra');
+
+  box.classList.remove('due','ok','warning');
+  if(extra)extra.classList.toggle('show',grams>=85);
 
   if(grams<85){
-    box.innerHTML=`<strong>Below the KHEU 85g nisab reference</strong><span>Current saved gold: ${grams.toFixed(4)}g. The reminder becomes relevant once your holdings reach 85g.</span>`;
+    box.innerHTML=`<strong>Below the 85g nisab reference</strong><span>Current gold: ${grams.toFixed(4)}g. Haul tracking will appear once your gold reaches 85g.</span>`;
     return;
   }
+
+  box.classList.add('warning');
+
   if(!dateValue){
-    box.innerHTML=`<strong>Nisab reached</strong><span>You currently have ${grams.toFixed(4)}g. Enter the date you first reached 85g to begin the haul countdown.</span>`;
-    box.classList.add('ok');
+    box.innerHTML=`<strong>⚠️ Nisab reached</strong><span>You currently have ${grams.toFixed(4)}g. Enter the date you first reached 85g to start tracking one full haul year.</span>`;
     return;
   }
 
@@ -1258,6 +1283,7 @@ function updateZakatReminder(){
     box.innerHTML=`<strong>Check the date</strong><span>Please enter a valid date for when you first reached 85g.</span>`;
     return;
   }
+
   const due=new Date(start);
   due.setFullYear(due.getFullYear()+1);
   const today=new Date();
@@ -1268,14 +1294,15 @@ function updateZakatReminder(){
   const days=Math.ceil((due-today)/86400000);
 
   if(today>=due){
+    box.classList.remove('warning');
     box.classList.add('due');
-    box.innerHTML=`<strong>Zakat check due</strong><span>Your saved date indicates one full year has completed since reaching 85g (${fmt(start)}). Please review your zakat obligation using the latest KHEU / Majlis Ugama Islam Brunei guidance and the Zakat Calculator.</span>`;
+    box.innerHTML=`<strong>Haul completed — zakat check due</strong><span>One full year has passed since ${fmt(start)}. Please review your zakat obligation using the latest KHEU guidance and the Zakat Calculator.</span>`;
   }else{
+    box.classList.remove('warning');
     box.classList.add('ok');
-    box.innerHTML=`<strong>Nisab reached ✓</strong><span>Haul start: ${fmt(start)} • Next zakat check: ${fmt(due)} • ${days} day${days===1?'':'s'} remaining${enabled?' • Reminder enabled':''}.</span>`;
+    box.innerHTML=`<strong>Nisab reached ✓</strong><span>Haul start: ${fmt(start)} • Next check: ${fmt(due)} • ${days} day${days===1?'':'s'} remaining${enabled?' • Reminder enabled':''}.</span>`;
   }
 }
-
 function calculateZakat(){
   const grams=Math.max(0,Number(el('zakatGrams').value)||0),haul=el('haulComplete').checked,nisab=85,zakatGoldPriceBND=158.39,rate=.025;
   if(!grams){el('zakatBnd').textContent='B$0.00';el('zakatMyr').textContent='RM0.00 equivalent';el('zakatGold').textContent='0.0000g equivalent';el('zakatStatus').textContent='Enter your gold holding to calculate.';return}
