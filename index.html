@@ -337,13 +337,14 @@
     <section class="intro">
       <div class="pg-code-badge" style="margin-bottom:8px">Private Beta • In Development</div>
       <span class="intro-tagline">Small steps, bigger future.</span>
-      <p>Use these tools to understand today’s Public Gold price, estimate how much gold your budget can buy, track your target and calculate an indicative Brunei gold zakat amount.</p>
+      <p>Use these tools to check today’s Public Gold price, estimate gold values, track your progress, plan a future gold goal and calculate an indicative Brunei gold zakat amount.</p>
     </section>
 
     <nav class="tabs" aria-label="Gold tools">
       <button class="tab-btn active" data-tab="pricePanel">Live Price</button>
       <button class="tab-btn" data-tab="productsPanel">Gold Prices</button>
       <button class="tab-btn" data-tab="trackerPanel">Tracker</button>
+      <button class="tab-btn" data-tab="calculatorPanel">Calculator</button>
       <button class="tab-btn" data-tab="zakatPanel">Zakat</button>
       <button class="tab-btn" data-tab="aboutPanel">About</button>
     </nav>
@@ -478,7 +479,7 @@
     <section class="panel" id="trackerPanel">
       <section class="card">
         <h2 class="section-title">Gold Saving Tracker</h2>
-        <p class="section-copy">Track your gold progress and check a future goal. Zakat haul tracking appears automatically once your gold reaches 85g.</p>
+        <p class="section-copy">Track your total gold accumulated against your personal target. Zakat haul tracking appears automatically once your gold reaches 85g.</p>
         <div class="sync-badge local" id="syncBadge">📱 Saved on this device only</div>
 
         <div class="tracker-section-card" style="margin-top:16px">
@@ -548,8 +549,22 @@
           </div>
         </div>
 
+        <div class="tracker-actions">
+          <button class="primary" id="saveTracker">Save My Progress</button>
+          <button class="secondary" id="resetTracker">Reset</button>
+        </div>
+        <div class="saved-msg" id="savedMsg"></div>
+        <p class="note">Guest progress is saved only on this device. Signed-in users can sync Gold Progress and Zakat Reminder securely to their account.</p>
+      </section>
+    </section>
+
+    <section class="panel" id="calculatorPanel">
+      <section class="card">
+        <h2 class="section-title">Gold Calculator</h2>
+        <p class="section-copy">Plan a future gold target using today’s Public Gold GAP price and the BND conversion shown on this website.</p>
+
         <div class="tracker-section-card">
-          <h3 class="tracker-section-title">Gold Goal Check</h3>
+          <h3 class="tracker-section-title">Goal Calculator</h3>
           <p class="tracker-section-copy">Set a future target in BND and timeframe to estimate how many grams and how much saving you may need.</p>
 
           <div class="goal-check-card">
@@ -587,12 +602,6 @@
           </div>
         </div>
 
-        <div class="tracker-actions">
-          <button class="primary" id="saveTracker">Save My Progress</button>
-          <button class="secondary" id="resetTracker">Reset</button>
-        </div>
-        <div class="saved-msg" id="savedMsg"></div>
-        <p class="note">Guest progress is saved only on this device. Signed-in users can sync Gold Progress and Zakat Reminder securely to their account.</p>
       </section>
     </section>
 
