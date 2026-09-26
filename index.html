@@ -291,6 +291,10 @@
     .zakat-reminder-extra.show{display:block}
     .zakat-reminder-status.warning{border-color:rgba(215,170,74,.55);background:rgba(215,170,74,.10)}
     .zakat-reminder-status.warning strong{color:var(--gold-dark)}
+
+    #calculatorPanel .section-copy{margin-bottom:0}
+    #calculatorPanel .calculator-main-card{margin-top:22px}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -560,48 +564,40 @@
 
     <section class="panel" id="calculatorPanel">
       <section class="card">
-        <h2 class="section-title">Gold Calculator</h2>
-        <p class="section-copy">Plan a future gold target using today’s Public Gold GAP price and the BND conversion shown on this website.</p>
+        <h2 class="section-title">Gold Goal Calculator</h2>
+        <p class="section-copy">Set a future target in BND and a timeline to estimate how many grams of gold and how much monthly saving may be needed.</p>
 
-        <div class="tracker-section-card">
-          <h3 class="tracker-section-title">Goal Calculator</h3>
-          <p class="tracker-section-copy">Set a future target in BND and timeframe to estimate how many grams and how much saving you may need.</p>
-
-          <div class="goal-check-card">
-            <div class="goal-check-grid" style="grid-template-columns:1.4fr 1fr">
-              <div class="field goal-value-field">
-                <label class="field-label" for="goalTargetBND">Target value</label>
-                <div class="input-affix">
-                  <input id="goalTargetBND" type="number" min="0" step="1" inputmode="decimal" placeholder="e.g. 10000" />
-                  <span class="suffix">B$</span>
-                </div>
-              </div>
-              <div class="field">
-                <label class="field-label" for="goalYears">Timeline</label>
-                <div class="input-affix">
-                  <input id="goalYears" type="number" min="0" max="50" step="1" inputmode="numeric" placeholder="2" />
-                  <span class="suffix">years</span>
-                </div>
+        <div class="goal-check-card calculator-main-card">
+          <div class="goal-check-grid" style="grid-template-columns:1.4fr 1fr">
+            <div class="field goal-value-field">
+              <label class="field-label" for="goalTargetBND">Target value</label>
+              <div class="input-affix">
+                <input id="goalTargetBND" type="number" min="0" step="1" inputmode="decimal" placeholder="e.g. 10000" />
+                <span class="suffix">B$</span>
               </div>
             </div>
-
-            <div class="standalone-note">This goal calculator is separate from Gold Progress and Saving History.</div>
-
-            <div class="goal-result-grid">
-              <div class="dca-metric"><div class="k">Estimated gold needed today</div><div class="v" id="goalGoldNeeded">—</div></div>
-              <div class="dca-metric"><div class="k">Monthly gold target</div><div class="v" id="goalRequiredPace">—</div></div>
-              <div class="dca-metric"><div class="k">Equivalent BND / month</div><div class="v" id="goalRequiredBND">—</div></div>
+            <div class="field">
+              <label class="field-label" for="goalYears">Timeline</label>
+              <div class="input-affix">
+                <input id="goalYears" type="number" min="0" max="50" step="1" inputmode="numeric" placeholder="2" />
+                <span class="suffix">years</span>
+              </div>
             </div>
-
-            <div class="goal-status" id="goalStatus">
-              <strong>Set your goal to begin.</strong>
-              Enter a BND target and timeline to estimate how much gold and monthly saving may be needed.
-            </div>
-
-            <p class="note">Based on today’s Public Gold GAP price and the BND conversion shown on this website. The grams required will change as gold prices and exchange rates change.</p>
           </div>
-        </div>
 
+          <div class="goal-result-grid">
+            <div class="dca-metric"><div class="k">Estimated gold needed today</div><div class="v" id="goalGoldNeeded">—</div></div>
+            <div class="dca-metric"><div class="k">Monthly gold target</div><div class="v" id="goalRequiredPace">—</div></div>
+            <div class="dca-metric"><div class="k">Equivalent BND / month</div><div class="v" id="goalRequiredBND">—</div></div>
+          </div>
+
+          <div class="goal-status" id="goalStatus">
+            <strong>Set your goal to begin.</strong>
+            Enter a BND target and timeline to estimate how much gold and monthly saving may be needed.
+          </div>
+
+          <p class="note">Based on today’s Public Gold GAP price and the BND conversion shown on this website. The grams required will change as gold prices and exchange rates change.</p>
+        </div>
       </section>
     </section>
 
