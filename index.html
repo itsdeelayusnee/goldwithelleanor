@@ -1058,7 +1058,7 @@ function renderSavingHistory(){
     renderSavingHistory();
   }));
 }
-function addSavingHistoryEntry()function addSavingHistoryEntry(){
+function addSavingHistoryEntry(){
   const month=el('historyMonth').value;
   const amount=Math.max(0,Number(el('historyAmount').value)||0);
   const grams=Math.max(0,Number(el('historyGrams').value)||0);
@@ -1080,7 +1080,7 @@ function addSavingHistoryEntry()function addSavingHistoryEntry(){
 }
 
 
-function formatTimelineMonthsfunction formatTimelineMonths(months){
+function formatTimelineMonths(months){
   if(!Number.isFinite(months)||months<=0)return '—';
   const y=Math.floor(months/12), m=months%12;
   if(y&&m)return `${y} year${y===1?'':'s'} ${m} month${m===1?'':'s'}`;
@@ -1138,7 +1138,7 @@ function updateTracker(){
   updateGoalCheck();
   renderSavingHistory();
 }
-async function saveTracker()async function saveTracker(){
+async function saveTracker(){
   const values={
     current_grams:Math.max(0,Number(el('currentGrams').value)||0),
     target_grams:Math.max(0,Number(el('targetGrams').value)||0),
@@ -1206,7 +1206,7 @@ async function resetTracker(){
 
 
 
-const GOAL_CHECK_KEYconst GOAL_CHECK_KEY='goldWithElleanorGoalCheckV1';
+const GOAL_CHECK_KEY='goldWithElleanorGoalCheckV1';
 
 function saveGoalCheck(){
   try{
