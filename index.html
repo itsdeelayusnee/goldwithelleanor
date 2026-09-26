@@ -479,12 +479,67 @@
     <section class="panel" id="trackerPanel">
       <section class="card">
         <h2 class="section-title">Gold Saving Tracker</h2>
-        <p class="section-copy">Use each tracker separately depending on what you want to check — saving history, DCA, projections, gold progress, timeline or a BND-based gold goal.</p>
+        <p class="section-copy">Four simple tools: track your overall gold progress, record saving history with DCA, check a future goal, and keep your zakat reminder.</p>
         <div class="sync-badge local" id="syncBadge">📱 Saved on this device only</div>
 
         <div class="tracker-section-card" style="margin-top:16px">
-          <h3 class="tracker-section-title">Gold Saving History</h3>
-          <p class="tracker-section-copy">Your saving amount does not have to be the same every month. Add each month separately — for example RM100 this month, RM500 next month and RM1,000 another month.</p>
+          <h3 class="tracker-section-title">Gold Progress</h3>
+          <p class="tracker-section-copy">Track your total gold accumulated against your personal gram target.</p>
+
+          <div class="field-grid">
+            <div class="field">
+              <label class="field-label" for="currentGrams">Total gold accumulated</label>
+              <div class="input-affix">
+                <input id="currentGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 50" />
+                <span class="suffix">g</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="targetGrams">Gold target</label>
+              <div class="input-affix">
+                <input id="targetGrams" type="number" min="0.0001" step="0.0001" inputmode="decimal" placeholder="e.g. 100" />
+                <span class="suffix">g</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="progress-card">
+            <div class="progress-top">
+              <div class="progress-title">Gold progress</div>
+              <div class="progress-percent" id="progressPercent">0%</div>
+            </div>
+            <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+            <div class="milestones" id="milestones"></div>
+            <div class="progress-copy" id="progressCopy">Enter your accumulated gold and target to start tracking.</div>
+          </div>
+
+          <div class="tracker-stats">
+            <div class="stat">
+              <div class="k">Current value</div>
+              <div class="v" id="currentValueMYR">RM0.00</div>
+              <div class="sub" id="currentValueBND">≈ B$0.00</div>
+            </div>
+            <div class="stat">
+              <div class="k">Gold remaining</div>
+              <div class="v" id="remainingGrams">0.0000g</div>
+              <div class="sub" id="remainingValue">RM0.00 remaining</div>
+            </div>
+            <div class="stat">
+              <div class="k">Target value</div>
+              <div class="v" id="targetValueMYR">RM0.00</div>
+              <div class="sub" id="targetValueBND">≈ B$0.00</div>
+            </div>
+            <div class="stat">
+              <div class="k">Progress</div>
+              <div class="v" id="currentTargetProgress">0%</div>
+              <div class="sub">towards your gram target</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tracker-section-card">
+          <h3 class="tracker-section-title">Gold Saving History + DCA</h3>
+          <p class="tracker-section-copy">Record each purchase using the actual RM paid and grams received. Your DCA is calculated automatically from the history you enter here.</p>
 
           <div class="history-entry-grid">
             <div class="field">
@@ -514,43 +569,37 @@
             <div class="stat">
               <div class="k">Months recorded</div>
               <div class="v" id="historyCount">0</div>
-              <div class="sub">saving history entries</div>
+              <div class="sub">purchase months</div>
             </div>
             <div class="stat">
-              <div class="k">Average saving</div>
+              <div class="k">Total contributed</div>
+              <div class="v" id="historyTotalRM">RM0.00</div>
+              <div class="sub">from recorded history</div>
+            </div>
+            <div class="stat">
+              <div class="k">Total gold recorded</div>
+              <div class="v" id="historyTotalG">0.0000g</div>
+              <div class="sub">from recorded history</div>
+            </div>
+            <div class="stat">
+              <div class="k">Average monthly saving</div>
               <div class="v" id="historyAverageRM">RM0.00</div>
               <div class="sub">per recorded month</div>
             </div>
             <div class="stat">
-              <div class="k">Average gold accumulated</div>
+              <div class="k">Average gold / month</div>
               <div class="v" id="historyAverageG">0.0000g</div>
               <div class="sub">per recorded month</div>
             </div>
           </div>
-        </div>
-
-        <div class="tracker-section-card">
-          <h3 class="tracker-section-title">DCA Tracker</h3>
-          <p class="tracker-section-copy">This calculator is independent. Enter only the total RM you have contributed and the total grams accumulated to calculate your weighted DCA against today’s Public Gold GAP price.</p>
-
-          <div class="field-grid">
-            <div class="field">
-              <label class="field-label" for="dcaInputRM">Total contributed</label>
-              <div class="input-affix">
-                <input id="dcaInputRM" type="number" min="0" step="0.01" inputmode="decimal" placeholder="e.g. 1900" />
-                <span class="suffix">RM</span>
-              </div>
-            </div>
-            <div class="field">
-              <label class="field-label" for="dcaInputG">Total gold accumulated</label>
-              <div class="input-affix">
-                <input id="dcaInputG" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 2.9800" />
-                <span class="suffix">g</span>
-              </div>
-            </div>
-          </div>
 
           <div class="dca-card">
+            <div class="dca-head">
+              <div>
+                <div class="dca-title">DCA vs Current Price</div>
+                <div class="dca-sub">Weighted average purchase price from your saving history compared with today’s Public Gold GAP price.</div>
+              </div>
+            </div>
             <div class="dca-grid">
               <div class="dca-metric"><div class="k">Your DCA average</div><div class="v" id="dcaAverage">—</div></div>
               <div class="dca-metric"><div class="k">Current GAP price</div><div class="v" id="dcaCurrentPrice">—</div></div>
@@ -559,50 +608,15 @@
               <div class="dca-metric"><div class="k">Current value of recorded gold</div><div class="v" id="dcaCurrentValue">—</div></div>
               <div class="dca-metric"><div class="k">Estimated difference</div><div class="v" id="dcaValueDifference">—</div></div>
             </div>
-            <div class="dca-status" id="dcaStatus">Enter your total contribution and total grams to calculate your DCA.</div>
+            <div class="dca-status" id="dcaStatus">Add your saving history to calculate your DCA.</div>
           </div>
 
-          <p class="note">DCA = total amount contributed ÷ total grams accumulated. This tracker does not use data from Gold Saving History.</p>
-        </div>
-
-        <div class="tracker-section-card">
-          <h3 class="tracker-section-title">Optional Fixed Monthly Projection</h3>
-          <p class="tracker-section-copy">Want to test a consistent monthly amount? Enter any RM amount here to see a simple 1, 3, 5 and 10-year projection. This does not replace your actual saving history.</p>
-
-          <div class="field">
-            <label class="field-label" for="monthlySaving">Monthly amount to project</label>
-            <div class="input-affix">
-              <input id="monthlySaving" type="number" min="0" step="1" inputmode="decimal" placeholder="e.g. 100" />
-              <span class="suffix">RM</span>
-            </div>
-          </div>
-
-          <div class="tracker-stats">
-            <div class="stat wide">
-              <div class="k">Estimated gold / month</div>
-              <div class="v" id="monthlyGrams">0.0000g</div>
-              <div class="sub" id="monthlyBnd">RM0 ≈ B$0.00</div>
-            </div>
-          </div>
-
-          <div class="projection-card">
-            <div class="projection-head">
-              <h3>Annual Gold Saving Projection</h3>
-              <p>Based on today’s Public Gold price and the same monthly amount.</p>
-            </div>
-            <div class="projection-grid">
-              <div class="projection-item"><div class="yr">1 Year</div><div class="grams" id="proj1y">0.0000g</div><div class="value" id="proj1yValue">RM0.00</div></div>
-              <div class="projection-item"><div class="yr">3 Years</div><div class="grams" id="proj3y">0.0000g</div><div class="value" id="proj3yValue">RM0.00</div></div>
-              <div class="projection-item"><div class="yr">5 Years</div><div class="grams" id="proj5y">0.0000g</div><div class="value" id="proj5yValue">RM0.00</div></div>
-              <div class="projection-item"><div class="yr">10 Years</div><div class="grams" id="proj10y">0.0000g</div><div class="value" id="proj10yValue">RM0.00</div></div>
-            </div>
-            <div class="projection-note">Projection assumes today’s gold price stays unchanged. Actual grams accumulated will vary as Public Gold prices change over time.</div>
-          </div>
+          <p class="note">DCA = total RM contributed ÷ total grams accumulated from the entries above.</p>
         </div>
 
         <div class="tracker-section-card">
           <h3 class="tracker-section-title">Gold Goal Check</h3>
-          <p class="tracker-section-copy">Set a target value in BND and the time you want to reach it. The calculator works backwards to estimate how many grams you need and whether your current saving pace is on track.</p>
+          <p class="tracker-section-copy">Set a future target in BND and timeframe to estimate how many grams and how much saving you may need.</p>
 
           <div class="goal-check-card">
             <div class="goal-check-grid">
@@ -639,7 +653,7 @@
                 </div>
               </div>
             </div>
-            <div class="standalone-note">This calculator uses only the values entered here. It does not use Current Gold & Target, Saving History or Monthly Projection.</div>
+            <div class="standalone-note">This goal calculator is separate from Gold Progress and Saving History.</div>
 
             <div class="goal-result-grid">
               <div class="dca-metric"><div class="k">Estimated gold needed today</div><div class="v" id="goalGoldNeeded">—</div></div>
@@ -652,108 +666,16 @@
 
             <div class="goal-status" id="goalStatus">
               <strong>Set your goal to begin.</strong>
-              Enter a BND target and timeframe. Current gold and average pace are optional inputs within this calculator.
+              Enter a BND target and timeframe. Current gold and average pace are optional.
             </div>
 
-            <p class="note">Based on today’s Public Gold GAP price and the BND conversion shown on this website. The grams required and timeline will change as gold prices, exchange rates and your saving pace change.</p>
-          </div>
-        </div>
-
-        <div class="tracker-section-card">
-          <h3 class="tracker-section-title">Current Gold & Target</h3>
-          <p class="tracker-section-copy">Enter your current total gold and your gram target. You can also add an optional timeframe — for example, 100g within 2 years.</p>
-
-          <div class="field-grid">
-            <div class="field">
-              <label class="field-label" for="currentGrams">Current gold</label>
-              <div class="input-affix">
-                <input id="currentGrams" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 20" />
-                <span class="suffix">g</span>
-              </div>
-            </div>
-            <div class="field">
-              <label class="field-label" for="targetGrams">Gold target</label>
-              <div class="input-affix">
-                <input id="targetGrams" type="number" min="0.0001" step="0.0001" inputmode="decimal" placeholder="e.g. 100" />
-                <span class="suffix">g</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="progress-card">
-            <div class="progress-top">
-              <div class="progress-title">Gold progress</div>
-              <div class="progress-percent" id="progressPercent">0%</div>
-            </div>
-            <div class="bar"><div class="bar-fill" id="barFill"></div></div>
-            <div class="milestones" id="milestones"></div>
-            <div class="progress-copy" id="progressCopy">Enter your current gold and target to start tracking.</div>
-          </div>
-
-          <div class="tracker-stats">
-            <div class="stat">
-              <div class="k">Current value</div>
-              <div class="v" id="currentValueMYR">RM0.00</div>
-              <div class="sub" id="currentValueBND">≈ B$0.00</div>
-            </div>
-            <div class="stat">
-              <div class="k">Gold remaining</div>
-              <div class="v" id="remainingGrams">0.0000g</div>
-              <div class="sub" id="remainingValue">RM0.00 remaining</div>
-            </div>
-            <div class="stat">
-              <div class="k">Target value</div>
-              <div class="v" id="targetValueMYR">RM0.00</div>
-              <div class="sub" id="targetValueBND">≈ B$0.00</div>
-            </div>
-            <div class="stat">
-              <div class="k">Progress</div>
-              <div class="v" id="currentTargetProgress">0%</div>
-              <div class="sub">towards your gram target</div>
-            </div>
-          </div>
-
-          <div class="target-timeframe">
-            <div class="tracker-section-title" style="font-size:14px">Target Timeline <span class="optional-label">Optional</span></div>
-            <p class="tracker-section-copy">Add a timeframe only if you want to check the pace needed to reach your gram target.</p>
-
-            <div class="target-timeframe-grid">
-              <div class="field">
-                <label class="field-label" for="currentTargetYears">Years</label>
-                <input id="currentTargetYears" type="number" min="0" max="50" step="1" inputmode="numeric" placeholder="e.g. 2" />
-              </div>
-              <div class="field">
-                <label class="field-label" for="currentTargetMonths">Extra months</label>
-                <input id="currentTargetMonths" type="number" min="0" max="11" step="1" inputmode="numeric" placeholder="0" />
-              </div>
-            </div>
-
-            <div class="field" style="margin-top:10px">
-              <label class="field-label" for="currentTargetPace">Your average gold saving <span class="optional-label">Optional</span></label>
-              <div class="input-affix">
-                <input id="currentTargetPace" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 1.5000" />
-                <span class="suffix">g/month</span>
-              </div>
-            </div>
-            <div class="standalone-note">Enter this only if you want the tracker to compare your own average pace with the pace required. It does not read your other trackers.</div>
-
-            <div class="target-timeframe-results">
-              <div class="dca-metric"><div class="k">Required pace</div><div class="v" id="currentTargetRequiredG">—</div></div>
-              <div class="dca-metric"><div class="k">Approx. saving / month</div><div class="v" id="currentTargetRequiredRM">—</div><div class="sub" id="currentTargetRequiredBND"></div></div>
-              <div class="dca-metric"><div class="k">Your average pace</div><div class="v" id="currentTargetActualPace">—</div></div>
-              <div class="dca-metric"><div class="k">Target date</div><div class="v" id="currentTargetDate">—</div></div>
-            </div>
-
-            <div class="target-timeframe-status" id="currentTargetStatus">
-              <strong>Timeline is optional.</strong>
-              Add a timeframe if you want to check whether your current saving pace matches your target.
-            </div>
+            <p class="note">Based on today’s Public Gold GAP price and the BND conversion shown on this website. The grams required will change as gold prices and exchange rates change.</p>
           </div>
         </div>
 
         <div class="zakat-reminder-card">
           <h3>Zakat Reminder</h3>
-          <p>The reminder becomes relevant once your saved gold reaches the KHEU nisab reference of 85g. Enter the date you first reached 85g to track one full haul year.</p>
+          <p>Track when your gold first reached the KHEU nisab reference of 85g and check when one full haul year is completed.</p>
 
           <div class="zakat-reminder-grid">
             <div class="field">
@@ -787,7 +709,7 @@
           <button class="secondary" id="resetTracker">Reset</button>
         </div>
         <div class="saved-msg" id="savedMsg"></div>
-        <p class="note">Guest progress is saved only on this device. Signed-in users can sync the same tracker data securely to their account.</p>
+        <p class="note">Guest progress is saved only on this device. Signed-in users can sync Gold Progress and Zakat Reminder securely to their account.</p>
       </section>
     </section>
 
@@ -996,7 +918,7 @@ function renderPrice(data,isLive){
   el('fxRate').textContent=state.displayedMyrPerBnd?`B$1 = RM${state.displayedMyrPerBnd.toFixed(3)}`:'—';el('publicGoldUpdated').textContent=data.publicGoldUpdatedAt||'—';
   el('liveStatus').innerHTML=`<span class="dot"></span> ${isLive?'LIVE FROM PUBLIC GOLD':'FALLBACK PRICE'}`;el('liveStatus').style.color=isLive?'var(--ok)':'var(--danger)';
   el('productStatus').innerHTML=`<span class="dot"></span> ${isLive?'LIVE FROM PUBLIC GOLD':'UNAVAILABLE'}`;el('productStatus').style.color=isLive?'var(--ok)':'var(--danger)';el('productUpdated').textContent=data.publicGoldUpdatedAt||'—';
-  renderProducts();updateTracker();updateDcaTracker();updateGoalCheck();calculateZakat();calculateBudget();
+  renderProducts();updateTracker();updateGoalCheck();calculateZakat();calculateBudget();
 }
 
 async function loadPrice(){
@@ -1084,6 +1006,7 @@ function renderSavingHistory(){
   const list=el('historyList');
   if(!list)return;
   const sorted=[...savingHistory].sort((a,b)=>String(b.month).localeCompare(String(a.month)));
+
   list.innerHTML=sorted.length?sorted.map(item=>{
     const d=new Date(item.month+'-01T00:00:00');
     const label=Number.isNaN(d.getTime())?item.month:new Intl.DateTimeFormat('en-BN',{month:'short',year:'numeric'}).format(d);
@@ -1092,25 +1015,50 @@ function renderSavingHistory(){
       <div class="history-amount">RM${Number(item.amount).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
       <button class="history-remove" type="button" data-history-month="${item.month}" aria-label="Remove ${label}">✕</button>
     </div>`;
-  }).join(''):`<div class="history-row"><div class="history-month">No monthly entries yet.</div><div class="history-amount">Add your first month above.</div></div>`;
+  }).join(''):`<div class="history-row"><div class="history-month">No saving history yet.</div><div class="history-amount">Add your first month above.</div></div>`;
 
-  const avg=historyAverageRM();
-  const totalGrams=savingHistory.reduce((sum,x)=>sum+(Number(x.grams)||0),0);
-  const avgGrams=savingHistory.length?totalGrams/savingHistory.length:0;
+  const count=savingHistory.length;
+  const totalRM=savingHistory.reduce((sum,x)=>sum+(Number(x.amount)||0),0);
+  const totalG=savingHistory.reduce((sum,x)=>sum+(Number(x.grams)||0),0);
+  const avgRM=count?totalRM/count:0;
+  const avgG=count?totalG/count:0;
+  const dca=totalG>0?totalRM/totalG:0;
+  const currentPrice=Number(state.myr)||0;
+  const diff=dca>0&&currentPrice>0?currentPrice-dca:0;
+  const pct=dca>0?diff/dca*100:0;
+  const currentValue=totalG*currentPrice;
+  const valueDiff=currentValue-totalRM;
 
-  el('historyCount').textContent=String(savingHistory.length);
-  el('historyAverageRM').textContent=`RM${avg.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
-  el('historyAverageG').textContent=`${avgGrams.toFixed(4)}g`;
+  el('historyCount').textContent=String(count);
+  el('historyTotalRM').textContent=`RM${totalRM.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  el('historyTotalG').textContent=`${totalG.toFixed(4)}g`;
+  el('historyAverageRM').textContent=`RM${avgRM.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  el('historyAverageG').textContent=`${avgG.toFixed(4)}g`;
+
+  el('dcaAverage').textContent=dca>0?`RM${dca.toFixed(2)}/g`:'—';
+  el('dcaCurrentPrice').textContent=currentPrice>0?`RM${currentPrice.toFixed(2)}/g`:'—';
+  el('dcaDifference').textContent=dca>0&&currentPrice>0?`${diff>=0?'+':''}RM${diff.toFixed(2)}/g`:'—';
+  el('dcaPercent').textContent=dca>0&&currentPrice>0?`${pct>=0?'+':''}${pct.toFixed(2)}%`:'—';
+  el('dcaCurrentValue').textContent=totalG>0&&currentPrice>0?`RM${currentValue.toFixed(2)}`:'—';
+  el('dcaValueDifference').textContent=dca>0&&currentPrice>0?`${valueDiff>=0?'+':''}RM${valueDiff.toFixed(2)}`:'—';
+
+  if(!(totalRM>0&&totalG>0)){
+    el('dcaStatus').textContent='Add your saving history to calculate your DCA.';
+  }else if(currentPrice>dca){
+    el('dcaStatus').innerHTML='<strong>Current GAP price is above your DCA average.</strong>';
+  }else if(currentPrice<dca){
+    el('dcaStatus').innerHTML='<strong>Current GAP price is below your DCA average.</strong>';
+  }else{
+    el('dcaStatus').innerHTML='<strong>Current GAP price is equal to your DCA average.</strong>';
+  }
 
   list.querySelectorAll('[data-history-month]').forEach(btn=>btn.addEventListener('click',()=>{
-    const month=btn.dataset.historyMonth;
-    savingHistory=savingHistory.filter(x=>x.month!==month);
+    savingHistory=savingHistory.filter(x=>x.month!==btn.dataset.historyMonth);
     saveSavingHistory();
     renderSavingHistory();
   }));
 }
-
-function addSavingHistoryEntry(){
+function addSavingHistoryEntry()function addSavingHistoryEntry(){
   const month=el('historyMonth').value;
   const amount=Math.max(0,Number(el('historyAmount').value)||0);
   const grams=Math.max(0,Number(el('historyGrams').value)||0);
@@ -1132,58 +1080,7 @@ function addSavingHistoryEntry(){
 }
 
 
-const DCA_TRACKER_KEY='goldWithElleanorDcaTrackerV1';
-
-function saveDcaTracker(){
-  try{
-    localStorage.setItem(DCA_TRACKER_KEY,JSON.stringify({
-      totalRM:el('dcaInputRM')?.value||'',
-      totalG:el('dcaInputG')?.value||''
-    }));
-  }catch(_){}
-}
-
-function loadDcaTracker(){
-  try{
-    const s=JSON.parse(localStorage.getItem(DCA_TRACKER_KEY)||'null');
-    if(s){
-      if(el('dcaInputRM'))el('dcaInputRM').value=s.totalRM||'';
-      if(el('dcaInputG'))el('dcaInputG').value=s.totalG||'';
-    }
-  }catch(_){}
-  updateDcaTracker();
-}
-
-function updateDcaTracker(){
-  if(!el('dcaInputRM'))return;
-  const totalRM=Math.max(0,Number(el('dcaInputRM').value)||0);
-  const totalG=Math.max(0,Number(el('dcaInputG').value)||0);
-  const currentPrice=Number(state.myr)||0;
-  const dca=totalRM>0&&totalG>0?totalRM/totalG:0;
-  const diff=dca>0&&currentPrice>0?currentPrice-dca:0;
-  const pct=dca>0?diff/dca*100:0;
-  const currentValue=totalG*currentPrice;
-  const valueDiff=currentValue-totalRM;
-
-  el('dcaAverage').textContent=dca>0?`RM${dca.toFixed(2)}/g`:'—';
-  el('dcaCurrentPrice').textContent=currentPrice>0?`RM${currentPrice.toFixed(2)}/g`:'—';
-  el('dcaDifference').textContent=dca>0&&currentPrice>0?`${diff>=0?'+':''}RM${diff.toFixed(2)}/g`:'—';
-  el('dcaPercent').textContent=dca>0&&currentPrice>0?`${pct>=0?'+':''}${pct.toFixed(2)}%`:'—';
-  el('dcaCurrentValue').textContent=totalG>0&&currentPrice>0?`RM${currentValue.toFixed(2)}`:'—';
-  el('dcaValueDifference').textContent=dca>0&&currentPrice>0?`${valueDiff>=0?'+':''}RM${valueDiff.toFixed(2)}`:'—';
-
-  if(!(totalRM>0&&totalG>0)){
-    el('dcaStatus').textContent='Enter your total contribution and total grams to calculate your DCA.';
-  }else if(currentPrice>dca){
-    el('dcaStatus').innerHTML='<strong>Current price is above your DCA average.</strong>';
-  }else if(currentPrice<dca){
-    el('dcaStatus').innerHTML='<strong>Current price is below your DCA average.</strong>';
-  }else{
-    el('dcaStatus').innerHTML='<strong>Current price is equal to your DCA average.</strong>';
-  }
-}
-
-function formatTimelineMonths(months){
+function formatTimelineMonthsfunction formatTimelineMonths(months){
   if(!Number.isFinite(months)||months<=0)return '—';
   const y=Math.floor(months/12), m=months%12;
   if(y&&m)return `${y} year${y===1?'':'s'} ${m} month${m===1?'':'s'}`;
@@ -1198,22 +1095,37 @@ function projectedTargetDate(months){
   return new Intl.DateTimeFormat('en-BN',{month:'long',year:'numeric'}).format(d);
 }
 
-function trackerValues(){return{current:Math.max(0,Number(el('currentGrams').value)||0),target:Math.max(0,Number(el('targetGrams').value)||0),monthly:Math.max(0,Number(el('monthlySaving').value)||0)}}
+function trackerValues(){
+  return{
+    current:Math.max(0,Number(el('currentGrams').value)||0),
+    target:Math.max(0,Number(el('targetGrams').value)||0)
+  };
+}
 function updateMilestones(current){
-  const vals=[1,5,10,20,50,100,250,500,750,1000];el('milestones').innerHTML=vals.map(v=>`<span class="milestone ${current>=v?'reached':''}">${v}g${current>=v?' ✓':''}</span>`).join('')
+  const vals=[1,5,10,20,50,100,250,500,750,1000];
+  el('milestones').innerHTML=vals.map(v=>`<span class="milestone ${current>=v?'reached':''}">${v}g${current>=v?' ✓':''}</span>`).join('');
 }
 function updateTracker(){
-  const{current,target,monthly}=trackerValues();
+  const{current,target}=trackerValues();
   const raw=target>0?(current/target)*100:0;
   const progress=Math.min(100,Math.max(0,raw));
   const remaining=target>0?Math.max(0,target-current):0;
-  const currentM=current*state.myr,currentB=currentM*state.rate,remainingM=remaining*state.myr,targetM=target*state.myr,targetB=targetM*state.rate;
+  const currentM=current*state.myr;
+  const currentB=currentM*state.rate;
+  const remainingM=remaining*state.myr;
+  const targetM=target*state.myr;
+  const targetB=targetM*state.rate;
 
   el('progressPercent').textContent=`${progress.toFixed(progress>=10?0:1)}%`;
   el('currentTargetProgress').textContent=`${progress.toFixed(progress>=10?0:1)}%`;
   el('barFill').style.width=`${progress}%`;
   updateMilestones(current);
-  el('progressCopy').textContent=target<=0?'Enter your current gold and target to start tracking.':remaining<=0?`Target reached — ${current.toFixed(4)}g saved.`:`${current.toFixed(4)}g of ${target.toFixed(4)}g saved.`;
+
+  el('progressCopy').textContent=target<=0
+    ?'Enter your accumulated gold and target to start tracking.'
+    :remaining<=0
+    ?`Target reached — ${current.toFixed(4)}g accumulated.`
+    :`${current.toFixed(4)}g of ${target.toFixed(4)}g accumulated.`;
 
   el('currentValueMYR').textContent=money(currentM,'MYR');
   el('currentValueBND').textContent=`≈ ${money(currentB,'BND')}`;
@@ -1222,35 +1134,15 @@ function updateTracker(){
   el('targetValueMYR').textContent=money(targetM,'MYR');
   el('targetValueBND').textContent=`≈ ${money(targetB,'BND')}`;
 
-  const monthlyG=state.myr>0?monthly/state.myr:0;
-  el('monthlyGrams').textContent=`${monthlyG.toFixed(4)}g`;
-  el('monthlyBnd').textContent=`${money(monthly,'MYR')} ≈ ${money(monthly*state.rate,'BND')}`;
-
-  const monthlyGold=state.myr>0?monthly/state.myr:0;
-
-  [
-    [1,'proj1y','proj1yValue'],
-    [3,'proj3y','proj3yValue'],
-    [5,'proj5y','proj5yValue'],
-    [10,'proj10y','proj10yValue']
-  ].forEach(([years,gramsId,valueId])=>{
-    const projectionMonths=years*12;
-    const gramsProjected=monthlyGold*projectionMonths;
-    const rmSaved=monthly*projectionMonths;
-    el(gramsId).textContent=`${gramsProjected.toFixed(4)}g`;
-    el(valueId).textContent=`RM${rmSaved.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
-  });
-
-  updateCurrentTargetTimeline();
   updateZakatReminder();
   updateGoalCheck();
   renderSavingHistory();
 }
-async function saveTracker(){
+async function saveTracker()async function saveTracker(){
   const values={
     current_grams:Math.max(0,Number(el('currentGrams').value)||0),
     target_grams:Math.max(0,Number(el('targetGrams').value)||0),
-    monthly_saving:Math.max(0,Number(el('monthlySaving').value)||0),
+    monthly_saving:0,
     nisab_reached_date:el('nisabReachedDate').value||null,
     zakat_reminder_enabled:el('zakatReminderEnabled').checked,
     updated_at:new Date().toISOString()
@@ -1263,7 +1155,6 @@ async function saveTracker(){
     localStorage.setItem(storageKey,JSON.stringify({
       currentGrams:el('currentGrams').value,
       targetGrams:el('targetGrams').value,
-      monthlySaving:el('monthlySaving').value,
       reminderGoldGrams:el('reminderGoldGrams').value,
       nisabReachedDate:el('nisabReachedDate').value,
       zakatReminderEnabled:el('zakatReminderEnabled').checked
@@ -1278,7 +1169,6 @@ async function loadTracker(){
     if(!error&&data){
       el('currentGrams').value=data.current_grams??'';
       el('targetGrams').value=data.target_grams??'';
-      el('monthlySaving').value=data.monthly_saving??'';
       el('nisabReachedDate').value=data.nisab_reached_date??'';
       el('zakatReminderEnabled').checked=Boolean(data.zakat_reminder_enabled);
     }else if(error){console.error(error)}
@@ -1288,7 +1178,6 @@ async function loadTracker(){
       if(s){
         el('currentGrams').value=s.currentGrams||'';
         el('targetGrams').value=s.targetGrams||'';
-        el('monthlySaving').value=s.monthlySaving||'';
         el('reminderGoldGrams').value=s.reminderGoldGrams||'';
         el('nisabReachedDate').value=s.nisabReachedDate||'';
         el('zakatReminderEnabled').checked=Boolean(s.zakatReminderEnabled);
@@ -1298,15 +1187,11 @@ async function loadTracker(){
   updateTracker();
 }
 async function resetTracker(){
-  ['currentGrams','targetGrams','monthlySaving','reminderGoldGrams','nisabReachedDate'].forEach(i=>el(i).value='');
+  ['currentGrams','targetGrams','reminderGoldGrams','nisabReachedDate'].forEach(i=>el(i).value='');
   savingHistory=[];
   try{localStorage.removeItem(SAVING_HISTORY_KEY)}catch(_){}
-  try{localStorage.removeItem(GOAL_CHECK_KEY)}catch(_){}
-  try{localStorage.removeItem(CURRENT_TARGET_TIMELINE_KEY)}catch(_){}
-  try{localStorage.removeItem(DCA_TRACKER_KEY)}catch(_){}
-  ['currentTargetYears','currentTargetMonths','currentTargetPace'].forEach(i=>{if(el(i))el(i).value='';});
-  ['goalTargetBND','goalYears','goalMonths','goalCurrentGold','goalOwnPace'].forEach(i=>{if(el(i))el(i).value='';});
-  ['dcaInputRM','dcaInputG','reminderGoldGrams'].forEach(i=>{if(el(i))el(i).value='';});
+  try{localStorage.removeItem(GOAL_CHECK_KEY)}catch(_){}  ['goalTargetBND','goalYears','goalMonths','goalCurrentGold','goalOwnPace'].forEach(i=>{if(el(i))el(i).value='';});
+  ['reminderGoldGrams'].forEach(i=>{if(el(i))el(i).value='';});
   renderSavingHistory();
   el('zakatReminderEnabled').checked=false;
   if(currentUser){
@@ -1321,93 +1206,7 @@ async function resetTracker(){
 
 
 
-const CURRENT_TARGET_TIMELINE_KEY='goldWithElleanorCurrentTargetTimelineV1';
-
-function saveCurrentTargetTimeline(){
-  try{
-    localStorage.setItem(CURRENT_TARGET_TIMELINE_KEY,JSON.stringify({
-      years:el('currentTargetYears')?.value||'',
-      months:el('currentTargetMonths')?.value||'',
-      pace:el('currentTargetPace')?.value||''
-    }));
-  }catch(_){}
-}
-
-function loadCurrentTargetTimeline(){
-  try{
-    const s=JSON.parse(localStorage.getItem(CURRENT_TARGET_TIMELINE_KEY)||'null');
-    if(s){
-      if(el('currentTargetYears'))el('currentTargetYears').value=s.years||'';
-      if(el('currentTargetMonths'))el('currentTargetMonths').value=s.months||'';
-      if(el('currentTargetPace'))el('currentTargetPace').value=s.pace||'';
-    }
-  }catch(_){}
-}
-
-function updateCurrentTargetTimeline(){
-  if(!el('currentTargetYears'))return;
-
-  const current=Math.max(0,Number(el('currentGrams').value)||0);
-  const target=Math.max(0,Number(el('targetGrams').value)||0);
-  const years=Math.max(0,Math.floor(Number(el('currentTargetYears').value)||0));
-  const extraMonths=Math.min(11,Math.max(0,Math.floor(Number(el('currentTargetMonths').value)||0)));
-  const targetMonths=years*12+extraMonths;
-  const remaining=target>0?Math.max(0,target-current):0;
-
-  const actualPace=Math.max(0,Number(el('currentTargetPace').value)||0);
-
-  const status=el('currentTargetStatus');
-  status.className='target-timeframe-status';
-
-  if(target<=0){
-    ['currentTargetRequiredG','currentTargetRequiredRM','currentTargetActualPace','currentTargetDate'].forEach(id=>el(id).textContent='—');
-    el('currentTargetRequiredBND').textContent='';
-    status.innerHTML='<strong>Enter a gold target first.</strong>Your timeframe will be calculated from the target grams above.';
-    return;
-  }
-
-  if(targetMonths<=0){
-    el('currentTargetRequiredG').textContent='—';
-    el('currentTargetRequiredRM').textContent='—';
-    el('currentTargetRequiredBND').textContent='';
-    el('currentTargetActualPace').textContent=actualPace>0?`${actualPace.toFixed(4)}g/month`:'—';
-    el('currentTargetDate').textContent='—';
-    status.innerHTML='<strong>Timeline is optional.</strong>Add a timeframe if you want to check whether your current saving pace matches your target.';
-    return;
-  }
-
-  const requiredPace=remaining/targetMonths;
-  const requiredRM=requiredPace*state.myr;
-  const requiredBND=requiredRM*state.rate;
-  const date=projectedTargetDate(targetMonths);
-
-  el('currentTargetRequiredG').textContent=remaining<=0?'Target reached':`${requiredPace.toFixed(4)}g/month`;
-  el('currentTargetRequiredRM').textContent=remaining<=0?'—':`RM${requiredRM.toFixed(2)}/month`;
-  el('currentTargetRequiredBND').textContent=remaining<=0?'':`≈ B$${requiredBND.toFixed(2)}/month`;
-  el('currentTargetActualPace').textContent=actualPace>0?`${actualPace.toFixed(4)}g/month`:'—';
-  el('currentTargetDate').textContent=date||'—';
-
-  if(remaining<=0){
-    status.innerHTML='<strong>Target reached.</strong>Your current gold already meets or exceeds this gram target.';
-    return;
-  }
-
-  if(actualPace<=0){
-    status.innerHTML=`<strong>You need about ${requiredPace.toFixed(4)}g/month.</strong>Enter your average gold saving in this calculator if you want to compare it with the required pace.`;
-    return;
-  }
-
-  const ratio=requiredPace>0?actualPace/requiredPace:0;
-  if(ratio>=1){
-    status.innerHTML=`<strong>On track for this timeframe.</strong>Your current average pace is ${actualPace.toFixed(4)}g/month versus ${requiredPace.toFixed(4)}g/month required.`;
-  }else if(ratio>=0.8){
-    status.innerHTML=`<strong>Slightly below the target pace.</strong>Your average is ${actualPace.toFixed(4)}g/month. To reach ${target.toFixed(4)}g within ${formatTimelineMonths(targetMonths)}, you need about ${requiredPace.toFixed(4)}g/month.`;
-  }else{
-    status.innerHTML=`<strong>Your pace may need adjustment.</strong>Your average is ${actualPace.toFixed(4)}g/month versus ${requiredPace.toFixed(4)}g/month required to reach ${target.toFixed(4)}g within ${formatTimelineMonths(targetMonths)}.`;
-  }
-}
-
-const GOAL_CHECK_KEY='goldWithElleanorGoalCheckV1';
+const GOAL_CHECK_KEYconst GOAL_CHECK_KEY='goldWithElleanorGoalCheckV1';
 
 function saveGoalCheck(){
   try{
@@ -1650,10 +1449,8 @@ async function initAuth(){
 document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');el(b.dataset.tab).classList.add('active');window.scrollTo({top:document.querySelector('.tabs').offsetTop-8,behavior:'smooth'})}));
 document.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>{el('budgetRM').value=b.dataset.amount;calculateBudget()}));
 el('budgetCalc').addEventListener('click',calculateBudget);el('budgetRM').addEventListener('input',calculateBudget);el('calculate').addEventListener('click',calculate);el('grams').addEventListener('keydown',e=>{if(e.key==='Enter')calculate()});
-['currentGrams','targetGrams','monthlySaving'].forEach(i=>el(i).addEventListener('input',updateTracker));
-['currentTargetYears','currentTargetMonths','currentTargetPace'].forEach(i=>el(i)?.addEventListener('input',()=>{saveCurrentTargetTimeline();updateCurrentTargetTimeline();}));
+['currentGrams','targetGrams'].forEach(i=>el(i).addEventListener('input',updateTracker));
 ['goalTargetBND','goalYears','goalMonths','goalCurrentGold','goalOwnPace'].forEach(i=>el(i)?.addEventListener('input',()=>{saveGoalCheck();updateGoalCheck();}));
-['dcaInputRM','dcaInputG'].forEach(i=>el(i)?.addEventListener('input',()=>{saveDcaTracker();updateDcaTracker();}));
 el('addHistoryEntry').addEventListener('click',addSavingHistoryEntry);
 el('historyAmount').addEventListener('keydown',e=>{if(e.key==='Enter')addSavingHistoryEntry()});
 el('historyGrams').addEventListener('keydown',e=>{if(e.key==='Enter')addSavingHistoryEntry()});
@@ -1758,7 +1555,7 @@ el('privateAccessBtn')?.addEventListener('click',submitPrivatePreviewCode);
 el('privateAccessCode')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitPrivatePreviewCode()});
 checkPrivatePreviewAccess();
 
-loadSavingHistory();loadDcaTracker();loadGoalCheck();loadCurrentTargetTimeline();initAuth();loadPrice();setInterval(loadPrice,5*60*1000);
+loadSavingHistory();loadGoalCheck();initAuth();loadPrice();setInterval(loadPrice,5*60*1000);
 </script>
 </body>
 </html>
