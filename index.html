@@ -881,7 +881,7 @@ function calculateBudget(){
 
   el('budgetResult').innerHTML=
     `<strong>${grams.toFixed(4)}g</strong><br>`+
-    `<span class="caption">Gold purchase: RM${amount.toFixed(2)} ≈ B$${goldBnd.toFixed(2)}. The fee does not increase the grams purchased.</span>`;
+    `<span class="caption">Gold purchase: RM${amount.toFixed(2)} ≈ B$${goldBnd.toFixed(2)}. Gold is calculated from your purchase amount. TNG fees are additional charges and do not add to the gold purchased.</span>`;
 
   el('manualTngResult').innerHTML=
     `Fee: <strong>RM${manualFee.toFixed(2)}</strong><br>`+
